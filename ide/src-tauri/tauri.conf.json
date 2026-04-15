@@ -1,0 +1,62 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "X-CURSOR",
+  "version": "0.1.0",
+  "identifier": "com.xcursor.ide",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "title": "X-CURSOR",
+        "width": 1400,
+        "height": 900,
+        "minWidth": 800,
+        "minHeight": 600,
+        "resizable": true,
+        "decorations": true,
+        "transparent": false
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self' ipc: http://ipc.localhost; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api2.cursor.sh https://api3.cursor.sh https://api4.cursor.sh https://api5.cursor.sh https://api.openai.com https://api.anthropic.com https://generativelanguage.googleapis.com https://api.deepseek.com https://openrouter.ai http://localhost:11434"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  },
+  "plugins": {
+    "fs": {
+      "all": true,
+      "scope": {
+        "allow": ["**"],
+        "deny": []
+      }
+    },
+    "http": {
+      "all": true,
+      "scope": {
+        "allow": ["https://**", "http://localhost/**"]
+      }
+    },
+    "shell": {
+      "all": false,
+      "sidecar": false,
+      "open": "https?://.+"
+    },
+    "dialog": {}
+  }
+}
