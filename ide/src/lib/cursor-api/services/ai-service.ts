@@ -47,7 +47,7 @@ export async function* streamChatCompletion(
 interface BYOKeyConfig {
   apiKey: string;
   baseUrl: string;
-  provider: "openai" | "anthropic" | "google" | "deepseek" | "openrouter" | "ollama";
+  provider: "openai" | "anthropic" | "google" | "deepseek" | "mistral" | "groq" | "openrouter" | "ollama";
 }
 
 /**
@@ -98,7 +98,7 @@ export async function* streamBYOChat(
     }
 
     default: {
-      // OpenAI-compatible (OpenAI, DeepSeek, OpenRouter, Ollama)
+      // OpenAI-compatible (OpenAI, DeepSeek, Mistral, Groq, OpenRouter, Ollama)
       url = `${config.baseUrl}/chat/completions`;
       headers = {
         Authorization: `Bearer ${config.apiKey}`,
@@ -107,6 +107,9 @@ export async function* streamBYOChat(
       if (config.provider === "openrouter") {
         headers["HTTP-Referer"] = "https://xcursor.dev";
         headers["X-Title"] = "X-CURSOR IDE";
+      }
+      if (config.provider === "mistral") {
+        headers["Accept"] = "text/event-stream";
       }
       body = JSON.stringify({
         model,
