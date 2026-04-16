@@ -9,7 +9,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import {
   Key,
@@ -23,7 +22,7 @@ import {
   Upload,
   Shield,
 } from "lucide-react";
-import type { AIProviderEnhanced, AuthMethod } from "@/types";
+import type { AIProviderEnhanced } from "@/types";
 
 type ModalState = "idle" | "waiting" | "input" | "success" | "error";
 

@@ -23,7 +23,7 @@ export async function* streamChatCompletion(
     max_tokens: 8192,
   });
 
-  const headers = buildCursorHeaders(accessToken, body);
+  const headers = await buildCursorHeaders(accessToken, body);
 
   let response: Response;
   try {
@@ -248,7 +248,7 @@ export async function getTabCompletion(
     model: request.model ?? "cursor-tab",
   });
 
-  const headers = buildCursorHeaders(accessToken, body);
+  const headers = await buildCursorHeaders(accessToken, body);
 
   try {
     const response = await cursorFetch(

@@ -28,8 +28,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Plus, Search, Cpu } from "lucide-react";
-import { mockModels } from "../data/mock-data";
-import type { AIModel } from "../types";
+import { mockEnhancedModels } from "../data/mock-data";
+import type { AIModelEnhanced } from "../types";
 import { useToast } from "@/hooks/use-toast";
 
 const typeColors: Record<string, string> = {
@@ -39,7 +39,7 @@ const typeColors: Record<string, string> = {
 };
 
 export default function Models() {
-  const [models, setModels] = useState(mockModels);
+  const [models, setModels] = useState(mockEnhancedModels);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -53,7 +53,7 @@ export default function Models() {
   });
 
   const toggleModel = (id: string) => {
-    setModels(prev => prev.map(m =>
+    setModels((prev: AIModelEnhanced[]) => prev.map(m =>
       m.id === id ? { ...m, status: m.status === "active" ? "disabled" as const : "active" as const } : m
     ));
   };
@@ -159,10 +159,10 @@ export default function Models() {
                     {formatContext(model.contextWindow)}
                   </TableCell>
                   <TableCell className="text-right text-sm tabular-nums">
-                    ${model.pricingInput.toFixed(2)}
+                    {model.pricing.input === 0 ? <span className="text-green-400">$0</span> : `$${model.pricing.input.toFixed(2)}`}
                   </TableCell>
                   <TableCell className="text-right text-sm tabular-nums">
-                    ${model.pricingOutput.toFixed(2)}
+                    {model.pricing.output === 0 ? <span className="text-green-400">$0</span> : `$${model.pricing.output.toFixed(2)}`}
                   </TableCell>
                   <TableCell className="text-right text-sm tabular-nums">
                     {(model.totalRequests / 1000).toFixed(0)}K

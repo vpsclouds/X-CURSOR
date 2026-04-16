@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Bot, Play, Square, Trash2, Zap, ZapOff, Loader2 } from "lucide-react";
 import { useAgentStore } from "../store/agent-store";
 import { ToolExecution } from "./ToolExecution";
@@ -21,10 +21,17 @@ export const AgentPanel: React.FC = () => {
 
   const { providerId, modelId } = useSettingsStore();
   const [goal, setGoal] = useState("");
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  const handleStop = () => {
+    abortControllerRef.current?.abort();
+    setRunning(false);
+  };
 
   const handleRun = async () => {
     if (!goal.trim() || isRunning) return;
     setRunning(true);
+    abortControllerRef.current = new AbortController();
 
     const userMsgId = addMessage({ role: "user", content: goal });
 
@@ -51,7 +58,8 @@ Respond in JSON format: { "thought": "...", "action": { "tool": "...", "input": 
       for await (const delta of cursorClient.streamChat(
         messages_for_api,
         modelId,
-        providerId
+        providerId,
+        abortControllerRef.current.signal
       )) {
         if (delta.type === "text" && delta.content) {
           fullResponse += delta.content;
@@ -71,8 +79,13 @@ Respond in JSON format: { "thought": "...", "action": { "tool": "...", "input": 
           // Use raw response
         }
       }
+    } catch (err) {
+      if ((err as Error).name !== "AbortError") {
+        updateMessage(assistantMsgId, `⚠️ Error: ${(err as Error).message}`);
+      }
     } finally {
       setRunning(false);
+      abortControllerRef.current = null;
     }
   };
 
@@ -122,7 +135,7 @@ Respond in JSON format: { "thought": "...", "action": { "tool": "...", "input": 
           />
           <div className="flex flex-col gap-1">
             <button
-              onClick={isRunning ? () => setRunning(false) : handleRun}
+              onClick={isRunning ? handleStop : handleRun}
               disabled={!goal.trim() && !isRunning}
               className={cn(
                 "flex items-center justify-center h-8 w-8 rounded transition-colors",

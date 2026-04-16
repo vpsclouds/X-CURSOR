@@ -75,10 +75,11 @@ export async function startAuthFlow(): Promise<AuthStartResult> {
  */
 export async function pollForTokens(
   uuid: string,
-  _codeVerifier: string
+  codeVerifier: string
 ): Promise<CursorAuthTokens | null> {
   try {
-    const response = await fetch(`${CURSOR_API_BASE}/auth/poll`, {
+    const url = `${CURSOR_API_BASE}/auth/poll?uuid=${encodeURIComponent(uuid)}&verifier=${encodeURIComponent(codeVerifier)}`;
+    const response = await fetch(url, {
       method: "GET",
       headers: {
         "x-cursor-client-version": "0.50.7",

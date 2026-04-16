@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -31,7 +31,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Search, MoreHorizontal, Ban, ArrowUpDown, UserCheck, Shield } from "lucide-react";
+import { Search, MoreHorizontal, Ban, ArrowUpDown, Shield } from "lucide-react";
 import { mockUsers } from "../data/mock-data";
 import type { User } from "../types";
 
@@ -52,7 +52,7 @@ export default function Users() {
   const [search, setSearch] = useState("");
   const [planFilter, setPlanFilter] = useState("all");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [users, setUsers] = useState(mockUsers);
+  const [users] = useState(mockUsers);
 
   const filteredUsers = users.filter((user) => {
     const matchesSearch = user.name.toLowerCase().includes(search.toLowerCase()) ||

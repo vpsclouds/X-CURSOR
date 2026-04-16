@@ -43,32 +43,29 @@ export function getMachineId(): string {
 }
 
 /**
- * Generates a simple checksum for request integrity
- * In real Cursor: hmac-sha256 of the request body with a device-specific key
+ * Generates a SHA-256 checksum for request integrity.
+ * Returns a promise; call sites that need sync behavior can await before building headers.
  */
-export function generateChecksum(body: string, accessToken: string): string {
-  // Simplified checksum — real Cursor uses HMAC-SHA256
+export async function generateChecksum(body: string, accessToken: string): Promise<string> {
   const data = `${body}${accessToken}${CLIENT_VERSION}`;
-  let hash = 0;
-  for (let i = 0; i < data.length; i++) {
-    const char = data.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash;
-  }
-  return Math.abs(hash).toString(16).padStart(8, "0");
+  const encoder = new TextEncoder();
+  const dataBuffer = encoder.encode(data);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", dataBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 /**
- * Builds standard Cursor API headers
+ * Builds standard Cursor API headers (async to support SHA-256 checksum).
  */
-export function buildCursorHeaders(
+export async function buildCursorHeaders(
   accessToken: string,
   requestBody?: string
-): Record<string, string> {
+): Promise<Record<string, string>> {
   const sessionId = getSessionId();
   const machineId = getMachineId();
   const checksum = requestBody
-    ? generateChecksum(requestBody, accessToken)
+    ? await generateChecksum(requestBody, accessToken)
     : "";
 
   return {
@@ -87,9 +84,9 @@ export function buildCursorHeaders(
 /**
  * Builds headers for gRPC-Web requests
  */
-export function buildGrpcWebHeaders(accessToken: string): Record<string, string> {
+export async function buildGrpcWebHeaders(accessToken: string): Promise<Record<string, string>> {
   return {
-    ...buildCursorHeaders(accessToken),
+    ...(await buildCursorHeaders(accessToken)),
     "Content-Type": "application/grpc-web+proto",
     Accept: "application/grpc-web+proto",
     "x-grpc-web": "1",
@@ -99,11 +96,11 @@ export function buildGrpcWebHeaders(accessToken: string): Record<string, string>
 /**
  * Builds headers for the OpenAI-compatible proxy endpoint
  */
-export function buildOpenAICompatHeaders(
+export async function buildOpenAICompatHeaders(
   accessToken: string,
   model?: string
-): Record<string, string> {
-  const headers = buildCursorHeaders(accessToken);
+): Promise<Record<string, string>> {
+  const headers = await buildCursorHeaders(accessToken);
   if (model) {
     headers["x-cursor-model"] = model;
   }

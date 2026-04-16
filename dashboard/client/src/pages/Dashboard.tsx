@@ -21,8 +21,6 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,

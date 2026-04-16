@@ -1,5 +1,5 @@
 import type {
-  User, ApiKey, AIProvider, AIModel, FeatureFlag, Transaction, LogEntry,
+  User, ApiKey, AIModel, FeatureFlag, Transaction, LogEntry,
   AIProviderEnhanced, AIModelEnhanced, ProviderConnection, ProviderQuota,
   ModelCombo, RoutingRule, RequestLog, ProviderTier, ConnectionStatus
 } from '../types';
@@ -30,17 +30,6 @@ export const mockApiKeys: ApiKey[] = [
   { id: '4', name: 'Legacy Integration', key: 'xc-leg-e1f2g3h4i5j6k7l8m9n0', createdAt: '2024-03-10', lastUsed: '2024-12-01T08:00:00', status: 'revoked', rateLimit: 2000, totalRequests: 450000 },
   { id: '5', name: 'Mobile App Key', key: 'xc-mob-o1p2q3r4s5t6u7v8w9x0', createdAt: '2024-11-01', lastUsed: '2025-01-15T09:20:00', status: 'active', rateLimit: 8000, totalRequests: 670000 },
   { id: '6', name: 'CI/CD Pipeline', key: 'xc-cicd-y1z2a3b4c5d6e7f8g9h0', createdAt: '2024-10-05', lastUsed: '2025-01-15T06:00:00', status: 'active', rateLimit: 3000, totalRequests: 340000 },
-];
-
-export const mockProviders: AIProvider[] = [
-  { id: '1', name: 'OpenAI', slug: 'openai', status: 'active', apiKeyConfigured: true, modelsAvailable: 8, totalRequests: 1250000, errorRate: 0.12, baseUrl: 'https://api.openai.com/v1', icon: 'openai' },
-  { id: '2', name: 'Anthropic', slug: 'anthropic', status: 'active', apiKeyConfigured: true, modelsAvailable: 5, totalRequests: 890000, errorRate: 0.08, baseUrl: 'https://api.anthropic.com', icon: 'anthropic' },
-  { id: '3', name: 'Google AI', slug: 'google', status: 'active', apiKeyConfigured: true, modelsAvailable: 6, totalRequests: 450000, errorRate: 0.15, baseUrl: 'https://generativelanguage.googleapis.com', icon: 'google' },
-  { id: '4', name: 'DeepSeek', slug: 'deepseek', status: 'active', apiKeyConfigured: true, modelsAvailable: 3, totalRequests: 320000, errorRate: 0.22, baseUrl: 'https://api.deepseek.com/v1', icon: 'deepseek' },
-  { id: '5', name: 'Mistral AI', slug: 'mistral', status: 'active', apiKeyConfigured: true, modelsAvailable: 4, totalRequests: 180000, errorRate: 0.10, baseUrl: 'https://api.mistral.ai/v1', icon: 'mistral' },
-  { id: '6', name: 'Groq', slug: 'groq', status: 'active', apiKeyConfigured: true, modelsAvailable: 5, totalRequests: 560000, errorRate: 0.05, baseUrl: 'https://api.groq.com/openai/v1', icon: 'groq' },
-  { id: '7', name: 'OpenRouter', slug: 'openrouter', status: 'inactive', apiKeyConfigured: false, modelsAvailable: 0, totalRequests: 0, errorRate: 0, baseUrl: 'https://openrouter.ai/api/v1', icon: 'openrouter' },
-  { id: '8', name: 'Ollama', slug: 'ollama', status: 'inactive', apiKeyConfigured: false, modelsAvailable: 0, totalRequests: 0, errorRate: 0, baseUrl: 'http://localhost:11434', icon: 'ollama' },
 ];
 
 export const mockModels: AIModel[] = [
@@ -261,7 +250,7 @@ export const mockEnhancedProviders: AIProviderEnhanced[] = [
     quotaSupported: false, deprecated: false, cooldownMs: 10000, maxRetries: 2,
   },
   {
-    id: 'ollama', name: 'Ollama Cloud', slug: 'ollama-cloud', status: 'active', apiKeyConfigured: true,
+    id: 'ollama', name: 'Ollama Cloud', slug: 'ollama', status: 'active', apiKeyConfigured: true,
     modelsAvailable: 12, totalRequests: 23000, errorRate: 2.1, baseUrl: 'https://ollama.com/api',
     icon: 'ollama', tier: 'free-tier', authMethod: 'api-key', color: '#ffffff', alias: 'ollama',
     serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 3,

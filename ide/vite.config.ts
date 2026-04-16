@@ -10,6 +10,41 @@ export default defineConfig(async () => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "vendor-react": ["react", "react-dom"],
+          "vendor-codemirror": [
+            "@codemirror/state",
+            "@codemirror/view",
+            "@codemirror/commands",
+            "@codemirror/language",
+            "@codemirror/search",
+            "@codemirror/autocomplete",
+            "codemirror",
+            "@codemirror/theme-one-dark",
+          ],
+          "vendor-cm-langs": [
+            "@codemirror/lang-javascript",
+            "@codemirror/lang-python",
+            "@codemirror/lang-rust",
+            "@codemirror/lang-css",
+            "@codemirror/lang-html",
+            "@codemirror/lang-json",
+            "@codemirror/lang-markdown",
+            "@codemirror/lang-sql",
+          ],
+          "vendor-ui": [
+            "@radix-ui/react-dialog",
+            "@radix-ui/react-tabs",
+            "@radix-ui/react-tooltip",
+            "@radix-ui/react-select",
+          ],
+        },
+      },
+    },
+  },
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //
   // 1. prevent vite from obscuring rust errors

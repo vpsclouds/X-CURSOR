@@ -5,8 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
@@ -28,17 +26,12 @@ import {
   Play,
   Loader2,
   Wifi,
-  WifiOff,
-  AlertCircle,
   Clock,
   Shield,
   Globe,
   Settings2,
   Trash2,
-  BarChart3,
   Timer,
-  CheckCircle2,
-  XCircle,
 } from "lucide-react";
 import {
   mockEnhancedProviders,
@@ -50,7 +43,7 @@ import {
 import OAuthModal from "@/components/shared/OAuthModal";
 import PricingModal from "@/components/shared/PricingModal";
 import { useToast } from "@/hooks/use-toast";
-import type { AIProviderEnhanced, ProviderConnection, AccountStrategy } from "../types";
+import type { ProviderConnection } from "../types";
 
 export default function ProviderDetail() {
   const params = useParams<{ id: string }>();
@@ -86,7 +79,11 @@ export default function ProviderDetail() {
   };
 
   const providerModels = mockEnhancedModels.filter(
-    (m) => m.provider === provider.name || m.providerOverrides[provider.id] !== undefined
+    (m) =>
+      m.provider === provider.name ||
+      m.provider === provider.alias ||
+      m.provider.toLowerCase() === provider.id ||
+      m.providerOverrides[provider.id] !== undefined
   );
 
   const activeConns = provider.connections.filter(c => c.status === "connected").length;
@@ -300,6 +297,7 @@ export default function ProviderDetail() {
       <PricingModal
         open={showPricing}
         onOpenChange={setShowPricing}
+        selectedModel={providerModels[0]?.name}
       />
     </div>
   );

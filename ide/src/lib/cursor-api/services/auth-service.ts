@@ -120,7 +120,7 @@ export class AuthService {
 
     try {
       const response = await fetch(`${CURSOR_API_ENDPOINTS.main}/auth/me`, {
-        headers: buildCursorHeaders(token),
+        headers: await buildCursorHeaders(token),
       });
 
       if (!response.ok) return null;

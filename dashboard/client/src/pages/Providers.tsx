@@ -12,7 +12,6 @@ import {
   Wifi,
   WifiOff,
   AlertTriangle,
-  Clock,
   BarChart3,
   Shield,
   Key,
@@ -26,7 +25,6 @@ import {
   tierColors,
   tierLabels,
   serviceKindLabels,
-  connectionStatusColors,
 } from "../data/mock-data";
 import OAuthModal from "@/components/shared/OAuthModal";
 import type { AIProviderEnhanced, ProviderTier, ServiceKind } from "../types";

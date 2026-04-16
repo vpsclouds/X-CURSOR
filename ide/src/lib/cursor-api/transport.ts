@@ -17,6 +17,9 @@ export const CURSOR_API_ENDPOINTS = {
 export type CursorEndpoint = keyof typeof CURSOR_API_ENDPOINTS;
 
 // ── gRPC-Web Message Frame ────────────────────
+// TODO: These gRPC-Web framing functions are reserved for future binary transport.
+// The current implementation uses SSE/HTTP streaming (processStreamingResponse).
+// Wire these in when migrating to gRPC-Web proto transport via @bufbuild/protobuf.
 
 /**
  * Encodes a protobuf message into a gRPC-Web frame.
@@ -33,6 +36,7 @@ export function encodeGrpcWebMessage(messageBytes: Uint8Array): Uint8Array {
 
 /**
  * Decodes gRPC-Web framed response into message bytes.
+ * TODO: Wire this in when gRPC-Web proto transport is implemented.
  */
 export function* decodeGrpcWebMessages(
   data: Uint8Array

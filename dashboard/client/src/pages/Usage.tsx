@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
@@ -32,7 +31,6 @@ import {
 import {
   mockUserUsage,
   mockModelUsage,
-  mockFeatureUsage,
   mockProviderQuotas,
   mockRequestLogs,
   mockCostChartData,
@@ -40,9 +38,8 @@ import {
   mockEnhancedProviders,
   tierColors,
   tierLabels,
-  connectionStatusColors,
 } from "../data/mock-data";
-import { Save, Activity, Clock, DollarSign, Zap, AlertTriangle, CheckCircle2, ArrowDownRight, BarChart3 } from "lucide-react";
+import { Save, Activity, Clock, DollarSign, Zap, AlertTriangle, ArrowDownRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const PIE_COLORS = [
@@ -60,12 +57,6 @@ const quotaDefaults = [
   { plan: "Ultra", requestsDay: "20,000", tokensDay: "5,000,000" },
   { plan: "Enterprise", requestsDay: "Unlimited", tokensDay: "Unlimited" },
 ];
-
-const statusColors = {
-  success: "text-green-400",
-  fallback: "text-yellow-400",
-  error: "text-red-400",
-};
 
 const statusBg = {
   success: "bg-green-500/15 text-green-400",

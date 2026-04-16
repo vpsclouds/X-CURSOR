@@ -30,7 +30,7 @@ export async function getServerConfig(
     const response = await fetch(
       `${CURSOR_API_ENDPOINTS.main}/api/config`,
       {
-        headers: buildCursorHeaders(accessToken),
+        headers: await buildCursorHeaders(accessToken),
       }
     );
     if (!response.ok) return null;

@@ -10,7 +10,7 @@ import type { CursorUser, CursorUsage } from "../types";
 export async function getUserInfo(accessToken: string): Promise<CursorUser | null> {
   try {
     const response = await fetch(`${CURSOR_API_ENDPOINTS.main}/auth/me`, {
-      headers: buildCursorHeaders(accessToken),
+      headers: await buildCursorHeaders(accessToken),
     });
     if (!response.ok) return null;
     return await response.json();
@@ -22,7 +22,7 @@ export async function getUserInfo(accessToken: string): Promise<CursorUser | nul
 export async function getUsageStats(accessToken: string): Promise<CursorUsage | null> {
   try {
     const response = await fetch(`${CURSOR_API_ENDPOINTS.main}/api/usage`, {
-      headers: buildCursorHeaders(accessToken),
+      headers: await buildCursorHeaders(accessToken),
     });
     if (!response.ok) return null;
     return await response.json();
@@ -34,7 +34,7 @@ export async function getUsageStats(accessToken: string): Promise<CursorUsage | 
 export async function getTeams(accessToken: string): Promise<unknown[]> {
   try {
     const response = await fetch(`${CURSOR_API_ENDPOINTS.main}/api/teams`, {
-      headers: buildCursorHeaders(accessToken),
+      headers: await buildCursorHeaders(accessToken),
     });
     if (!response.ok) return [];
     const data = await response.json();

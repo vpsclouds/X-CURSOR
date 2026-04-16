@@ -4,10 +4,8 @@ import { Sidebar } from "./Sidebar";
 import { TabBar } from "./TabBar";
 import { BottomPanel } from "./BottomPanel";
 import { AIChatPanel } from "@/features/ai/components/AIChatPanel";
-import { FileTree } from "@/features/file-explorer/components/FileTree";
 import { CodeEditor } from "@/features/editor/components/CodeEditor";
 import { useEditorStore } from "@/features/editor/store/editor-store";
-import { useFileStore } from "@/features/file-explorer/store/file-store";
 import { cn } from "@/lib/utils";
 
 interface MainLayoutProps {

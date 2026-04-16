@@ -17,6 +17,7 @@ import Billing from "./pages/Billing";
 import Features from "./pages/Features";
 import Settings from "./pages/Settings";
 import Logs from "./pages/Logs";
+import NotFound from "./pages/not-found";
 
 function AppContent() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -52,11 +53,7 @@ function AppContent() {
         <Route path="/features" component={Features} />
         <Route path="/settings" component={Settings} />
         <Route path="/logs" component={Logs} />
-        <Route>
-          <div className="flex items-center justify-center h-full">
-            <p className="text-muted-foreground">Page not found</p>
-          </div>
-        </Route>
+        <Route component={NotFound} />
       </Switch>
     </DashboardLayout>
   );

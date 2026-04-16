@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,13 +13,11 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import {
-  ArrowDown,
   ArrowRight,
   Play,
   Plus,
   Route,
   Trash2,
-  GripVertical,
   Zap,
   Search,
   ChevronDown,
@@ -28,7 +26,7 @@ import {
 } from "lucide-react";
 import { mockRoutingRules, mockEnhancedProviders, tierColors, tierLabels } from "../data/mock-data";
 import { useToast } from "@/hooks/use-toast";
-import type { RoutingRule, ProviderTier } from "../types";
+import type { RoutingRule } from "../types";
 
 export default function Routing() {
   const [rules, setRules] = useState<RoutingRule[]>(mockRoutingRules);

@@ -2,7 +2,6 @@ import { useCallback, useRef } from "react";
 import { useAIChatStore } from "../store/ai-chat-store";
 import { useSettingsStore } from "@/features/settings/store/settings-store";
 import { cursorClient, setProviderApiKey } from "@/lib/cursor-api/client";
-import { generateId } from "@/lib/utils";
 
 export function useAIChat(chatId: string | null) {
   const {

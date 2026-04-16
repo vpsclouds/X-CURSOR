@@ -6,6 +6,7 @@ import { useSettingsStore } from "@/features/settings/store/settings-store";
 import { cursorClient } from "@/lib/cursor-api/client";
 import { generateId } from "@/lib/utils";
 import { cn } from "@/lib/utils";
+import { useEditorStore } from "@/features/editor/store/editor-store";
 
 export const ComposerPanel: React.FC = () => {
   const {
@@ -28,6 +29,7 @@ export const ComposerPanel: React.FC = () => {
 
   const { providerId, modelId } = useSettingsStore();
   const [localPrompt, setLocalPrompt] = useState(prompt);
+  const { tabs, updateContent } = useEditorStore();
 
   const handleGenerate = async () => {
     if (!localPrompt.trim() || isGenerating) return;
@@ -60,20 +62,26 @@ Format your response as JSON: { "explanation": "...", "edits": [{ "filePath": ".
           const parsed = JSON.parse(jsonMatch[0]);
           setExplanation(parsed.explanation ?? "");
           setEdits(
-            (parsed.edits ?? []).map((e: { filePath: string; content: string }) => ({
-              id: generateId(),
-              filePath: e.filePath,
-              originalContent: "",
-              newContent: e.content,
-              status: "pending" as const,
-            }))
+            (parsed.edits ?? []).map((e: { filePath: string; content: string }) => {
+              // Populate originalContent from the editor store if the file is open
+              const openTab = tabs.find((t) => t.path === e.filePath || t.name === e.filePath);
+              const originalContent = openTab?.content ?? `// Original content of ${e.filePath}`;
+              return {
+                id: generateId(),
+                filePath: e.filePath,
+                originalContent,
+                newContent: e.content,
+                status: "pending" as const,
+              };
+            })
           );
         } else {
           // Fallback: treat as single file edit
+          const activeTab = tabs.find((t) => t.id === useEditorStore.getState().activeTabId);
           setEdits([{
             id: generateId(),
-            filePath: "untitled.ts",
-            originalContent: "",
+            filePath: activeTab?.path ?? "untitled.ts",
+            originalContent: activeTab?.content ?? "",
             newContent: fullResponse,
             status: "pending" as const,
           }]);
@@ -85,6 +93,30 @@ Format your response as JSON: { "explanation": "...", "edits": [{ "filePath": ".
     } finally {
       setGenerating(false);
     }
+  };
+
+  const handleAccept = (id: string) => {
+    const edit = edits.find((e) => e.id === id);
+    if (edit) {
+      // Write the new content to the editor store if the file is open
+      const openTab = tabs.find((t) => t.path === edit.filePath || t.name === edit.filePath);
+      if (openTab) {
+        updateContent(openTab.id, edit.newContent);
+      }
+    }
+    acceptEdit(id);
+  };
+
+  const handleAcceptAll = () => {
+    edits.forEach((edit) => {
+      if (edit.status === "pending") {
+        const openTab = tabs.find((t) => t.path === edit.filePath || t.name === edit.filePath);
+        if (openTab) {
+          updateContent(openTab.id, edit.newContent);
+        }
+      }
+    });
+    acceptAll();
   };
 
   const pendingCount = edits.filter((e) => e.status === "pending").length;
@@ -154,7 +186,7 @@ Format your response as JSON: { "explanation": "...", "edits": [{ "filePath": ".
           <FileDiff
             key={edit.id}
             edit={edit}
-            onAccept={acceptEdit}
+            onAccept={handleAccept}
             onReject={rejectEdit}
           />
         ))}
@@ -167,7 +199,7 @@ Format your response as JSON: { "explanation": "...", "edits": [{ "filePath": ".
             {pendingCount} change{pendingCount !== 1 ? "s" : ""} pending
           </span>
           <button
-            onClick={acceptAll}
+            onClick={handleAcceptAll}
             className="flex items-center gap-1 px-2 py-0.5 rounded bg-xcursor-success/20 text-xcursor-success hover:bg-xcursor-success/30 text-editor-xs"
           >
             <CheckCheck className="h-3 w-3" /> Accept All

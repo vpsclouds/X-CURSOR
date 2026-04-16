@@ -15,7 +15,9 @@ import { markdown } from "@codemirror/lang-markdown";
 import { sql } from "@codemirror/lang-sql";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { useEditorStore } from "../store/editor-store";
+import { useSettingsStore } from "@/features/settings/store/settings-store";
 import { InlineEdit } from "./InlineEdit";
+import { TabCompletion, useTabCompletion } from "./TabCompletion";
 
 interface CodeEditorProps {
   filePath: string;
@@ -50,6 +52,8 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ filePath, language }) =>
   const containerRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<EditorView | null>(null);
   const { tabs, activeTabId, updateContent, saveTab } = useEditorStore();
+  const { fontSize, fontFamily, lineNumbers: showLineNumbers, wordWrap, tabSize } = useSettingsStore();
+  const tabCompletion = useTabCompletion();
 
   const activeTab = tabs.find((t) => t.id === activeTabId);
   const content = activeTab?.content ?? "";
@@ -63,10 +67,24 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ filePath, language }) =>
       editorRef.current = null;
     }
 
+    // Build settings-driven theme override
+    const settingsTheme = EditorView.theme({
+      "&": {
+        fontSize: `${fontSize}px`,
+        fontFamily: `'${fontFamily}', 'JetBrains Mono', 'Fira Code', monospace`,
+      },
+      ".cm-scroller": {
+        fontFamily: `'${fontFamily}', 'JetBrains Mono', 'Fira Code', monospace`,
+        overflowX: wordWrap ? "auto" : "auto",
+      },
+    });
+
+    const wordWrapExtension = wordWrap ? EditorView.lineWrapping : [];
+
     const startState = EditorState.create({
       doc: content,
       extensions: [
-        lineNumbers(),
+        ...(showLineNumbers ? [lineNumbers()] : []),
         highlightActiveLineGutter(),
         highlightSpecialChars(),
         history(),
@@ -83,6 +101,8 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ filePath, language }) =>
         crosshairCursor(),
         highlightActiveLine(),
         highlightSelectionMatches(),
+        EditorState.tabSize.of(tabSize),
+        wordWrapExtension,
         keymap.of([
           ...closeBracketsKeymap,
           ...defaultKeymap,
@@ -90,10 +110,20 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ filePath, language }) =>
           ...historyKeymap,
           ...completionKeymap,
           indentWithTab,
+          // Cmd+K opens Inline Edit (overrides CodeMirror's default Mod-k binding)
+          {
+            key: "Mod-k",
+            run: () => {
+              // Dispatch a custom event that InlineEdit listens for
+              window.dispatchEvent(new CustomEvent("xcursor:inline-edit-open"));
+              return true; // prevent CodeMirror's fold/search from handling Mod-k
+            },
+          },
         ]),
         getLanguageExtension(language),
         oneDark,
         xcursorTheme,
+        settingsTheme,
         EditorView.updateListener.of((update) => {
           if (update.docChanged && activeTabId) {
             updateContent(activeTabId, update.state.doc.toString());
@@ -118,7 +148,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ filePath, language }) =>
     });
 
     editorRef.current = view;
-  }, [filePath, language]);
+  }, [filePath, language, fontSize, fontFamily, showLineNumbers, wordWrap, tabSize, activeTabId, updateContent, saveTab]);
 
   useEffect(() => {
     initEditor();
@@ -133,9 +163,15 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({ filePath, language }) =>
       <div
         ref={containerRef}
         className="flex-1 overflow-auto"
-        style={{ fontFamily: "'JetBrains Mono', 'Fira Code', monospace" }}
+        style={{ fontFamily: `'${fontFamily}', 'JetBrains Mono', 'Fira Code', monospace` }}
       />
       <InlineEdit />
+      <TabCompletion
+        suggestion={tabCompletion.suggestion ?? undefined}
+        visible={tabCompletion.visible}
+        onAccept={tabCompletion.accept}
+        onReject={tabCompletion.reject}
+      />
     </div>
   );
 };

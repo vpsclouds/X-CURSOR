@@ -82,6 +82,12 @@ export const Terminal: React.FC = () => {
       return;
     }
 
+    // Handle clear specially before adding the command line
+    if (trimmed === "clear") {
+      setLines([]);
+      return;
+    }
+
     // Simulate basic commands
     const output = simulateCommand(trimmed);
     if (output) {
@@ -143,6 +149,7 @@ export const Terminal: React.FC = () => {
             ref={inputRef}
             type="text"
             value={input}
+            placeholder="Type a command..."
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             disabled={isGeneratingCmd}

@@ -24,8 +24,6 @@ interface SettingsStore {
   // Features
   enableTabCompletion: boolean;
   enableInlineEdit: boolean;
-  yoloMode: boolean;
-  planMode: boolean;
 
   // Actions
   setProvider: (providerId: string) => void;
@@ -33,10 +31,8 @@ interface SettingsStore {
   setApiKey: (providerId: string, key: string) => void;
   setFontSize: (size: number) => void;
   setTheme: (theme: "dark" | "light") => void;
-  toggleYoloMode: () => void;
-  togglePlanMode: () => void;
   toggleTabCompletion: () => void;
-  updateSettings: (partial: Partial<Omit<SettingsStore, "setProvider" | "setModel" | "setApiKey" | "setFontSize" | "setTheme" | "toggleYoloMode" | "togglePlanMode" | "toggleTabCompletion" | "updateSettings">>) => void;
+  updateSettings: (partial: Partial<Omit<SettingsStore, "setProvider" | "setModel" | "setApiKey" | "setFontSize" | "setTheme" | "toggleTabCompletion" | "updateSettings">>) => void;
 }
 
 const defaultProvider = AI_PROVIDERS[1]; // openai
@@ -64,8 +60,6 @@ export const useSettingsStore = create<SettingsStore>()(
       // Features
       enableTabCompletion: true,
       enableInlineEdit: true,
-      yoloMode: false,
-      planMode: false,
 
       // Actions
       setProvider: (providerId) =>
@@ -93,16 +87,6 @@ export const useSettingsStore = create<SettingsStore>()(
       setTheme: (theme) =>
         set((state) => {
           state.theme = theme;
-        }),
-
-      toggleYoloMode: () =>
-        set((state) => {
-          state.yoloMode = !state.yoloMode;
-        }),
-
-      togglePlanMode: () =>
-        set((state) => {
-          state.planMode = !state.planMode;
         }),
 
       toggleTabCompletion: () =>

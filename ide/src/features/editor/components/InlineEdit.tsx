@@ -3,6 +3,7 @@ import { Sparkles, X, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { cursorClient } from "@/lib/cursor-api/client";
 import { useSettingsStore } from "@/features/settings/store/settings-store";
+import { useEditorStore } from "../store/editor-store";
 
 /**
  * Cmd+K / Inline Edit widget — appears within the editor for quick AI edits.
@@ -14,22 +15,38 @@ export const InlineEdit: React.FC = () => {
   const [response, setResponse] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const { providerId, modelId } = useSettingsStore();
+  const { activeTabId, updateContent } = useEditorStore();
 
-  // Listen for Cmd+K
+  // Listen for Cmd+K — prefer the editor's custom event (fired from CodeMirror keymap)
+  // so it only triggers when the editor is focused, avoiding conflicts.
   useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+    const openHandler = () => {
+      setIsOpen((v) => !v);
+      setResponse(null);
+      setPrompt("");
+    };
+
+    const keyHandler = (e: KeyboardEvent) => {
+      // Only handle Cmd+K from the window listener when the editor DOM is NOT focused
+      // (e.g. when focus is on the terminal, sidebar, etc.)
+      const editorEl = document.querySelector(".cm-editor");
+      const isEditorFocused = editorEl ? editorEl.contains(document.activeElement) : false;
+
+      if ((e.metaKey || e.ctrlKey) && e.key === "k" && !isEditorFocused) {
         e.preventDefault();
-        setIsOpen((v) => !v);
-        setResponse(null);
-        setPrompt("");
+        openHandler();
       }
       if (e.key === "Escape" && isOpen) {
         setIsOpen(false);
       }
     };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
+
+    window.addEventListener("xcursor:inline-edit-open" as keyof WindowEventMap, openHandler);
+    window.addEventListener("keydown", keyHandler);
+    return () => {
+      window.removeEventListener("xcursor:inline-edit-open" as keyof WindowEventMap, openHandler);
+      window.removeEventListener("keydown", keyHandler);
+    };
   }, [isOpen]);
 
   useEffect(() => {
@@ -63,7 +80,9 @@ export const InlineEdit: React.FC = () => {
   };
 
   const handleAccept = () => {
-    // In a real implementation, this applies the diff to the editor
+    if (response && activeTabId) {
+      updateContent(activeTabId, response);
+    }
     setIsOpen(false);
     setResponse(null);
     setPrompt("");

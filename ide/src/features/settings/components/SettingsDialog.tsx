@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X, Settings, Code2, Cpu, Palette } from "lucide-react";
+import { Settings, Code2, Cpu, Palette } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -9,6 +9,7 @@ import {
 import { GeneralSettings } from "./GeneralSettings";
 import { AIProviderSettings } from "./AIProviderSettings";
 import { cn } from "@/lib/utils";
+import { useSettingsStore } from "../store/settings-store";
 
 type SettingsTab = "general" | "ai" | "appearance";
 
@@ -68,50 +69,73 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   );
 };
 
-// ── Appearance settings stub ──────────────────
+// -- Appearance settings --
 
-const AppearanceSettings: React.FC = () => (
-  <div className="flex flex-col gap-4">
-    <div>
-      <h3 className="text-editor-base font-semibold text-xcursor-text mb-3">Theme</h3>
-      <div className="grid grid-cols-3 gap-2">
-        {["Dark (Default)", "Dark High Contrast", "Light"].map((theme) => (
-          <button
-            key={theme}
-            className={cn(
-              "p-3 rounded-lg border text-editor-xs text-left transition-colors",
-              theme === "Dark (Default)"
-                ? "border-accent/50 bg-accent/5 text-xcursor-text"
-                : "border-xcursor-border text-xcursor-text-muted hover:border-xcursor-text-muted/50"
-            )}
-          >
-            <div className="w-full h-8 rounded mb-2 bg-[#1e1e1e] border border-xcursor-border/50" />
-            {theme}
-          </button>
-        ))}
+const THEME_OPTIONS: { label: string; value: "dark" | "light"; preview: string }[] = [
+  { label: "Dark (Default)", value: "dark", preview: "#1e1e1e" },
+  { label: "Dark High Contrast", value: "dark", preview: "#000000" },
+  { label: "Light", value: "light", preview: "#f5f5f5" },
+];
+
+const FONT_OPTIONS = ["JetBrains Mono", "Fira Code", "Cascadia Code", "Consolas"];
+
+const AppearanceSettings: React.FC = () => {
+  const { theme, fontFamily, setTheme, updateSettings } = useSettingsStore();
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div>
+        <h3 className="text-editor-base font-semibold text-xcursor-text mb-3">Theme</h3>
+        <div className="grid grid-cols-3 gap-2">
+          {THEME_OPTIONS.map((opt) => {
+            const isActive =
+              (opt.value === "dark" && theme === "dark" && opt.label === "Dark (Default)") ||
+              (opt.value === "light" && theme === "light");
+            return (
+              <button
+                key={opt.label}
+                onClick={() => setTheme(opt.value)}
+                className={cn(
+                  "p-3 rounded-lg border text-editor-xs text-left transition-colors",
+                  isActive
+                    ? "border-accent/50 bg-accent/5 text-xcursor-text"
+                    : "border-xcursor-border text-xcursor-text-muted hover:border-xcursor-text-muted/50"
+                )}
+              >
+                <div
+                  className="w-full h-8 rounded mb-2 border border-xcursor-border/50"
+                  style={{ backgroundColor: opt.preview }}
+                />
+                {opt.label}
+                {isActive && <span className="ml-1 text-accent">&#10003;</span>}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-editor-base font-semibold text-xcursor-text mb-3">Font</h3>
+        <div className="flex flex-col gap-2">
+          {FONT_OPTIONS.map((font) => (
+            <button
+              key={font}
+              onClick={() => updateSettings({ fontFamily: font })}
+              className={cn(
+                "flex items-center gap-3 px-3 py-2 rounded border text-editor-sm transition-colors",
+                fontFamily === font
+                  ? "border-accent/50 bg-accent/5 text-xcursor-text"
+                  : "border-xcursor-border text-xcursor-text-muted hover:bg-xcursor-hover"
+              )}
+            >
+              <span className="font-mono">{font}</span>
+              {fontFamily === font && (
+                <span className="ml-auto text-editor-xs text-accent">active</span>
+              )}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
-
-    <div>
-      <h3 className="text-editor-base font-semibold text-xcursor-text mb-3">Font</h3>
-      <div className="flex flex-col gap-2">
-        {["JetBrains Mono", "Fira Code", "Cascadia Code", "Consolas"].map((font) => (
-          <button
-            key={font}
-            className={cn(
-              "flex items-center gap-3 px-3 py-2 rounded border text-editor-sm transition-colors",
-              font === "JetBrains Mono"
-                ? "border-accent/50 bg-accent/5 text-xcursor-text"
-                : "border-xcursor-border text-xcursor-text-muted hover:bg-xcursor-hover"
-            )}
-          >
-            <span className="font-mono">{font}</span>
-            {font === "JetBrains Mono" && (
-              <span className="ml-auto text-editor-xs text-accent">active</span>
-            )}
-          </button>
-        ))}
-      </div>
-    </div>
-  </div>
-);
+  );
+};
