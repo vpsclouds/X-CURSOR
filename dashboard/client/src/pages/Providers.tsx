@@ -16,9 +16,10 @@ import {
   Shield,
   Key,
   Smartphone,
-  ExternalLink,
   Upload,
-  Monitor,
+  Lock,
+  LockOpen,
+  Layers,
 } from "lucide-react";
 import {
   mockEnhancedProviders,
@@ -32,10 +33,23 @@ import type { AIProviderEnhanced, ProviderTier, ServiceKind } from "../types";
 const authMethodIcons: Record<string, typeof Key> = {
   "api-key": Key,
   "oauth-pkce": Shield,
-  "oauth-basic": ExternalLink,
+  "oauth-authcode": Lock,
   "device-code": Smartphone,
+  "device-code-pkce": Smartphone,
   "token-import": Upload,
-  "none": Monitor,
+  "noAuth": LockOpen,
+  "multi-method": Layers,
+};
+
+const authMethodLabels: Record<string, string> = {
+  "api-key": "API Key",
+  "oauth-pkce": "OAuth + PKCE",
+  "oauth-authcode": "OAuth Auth Code",
+  "device-code": "Device Code",
+  "device-code-pkce": "Device Code + PKCE",
+  "token-import": "Token Import",
+  "noAuth": "No Auth",
+  "multi-method": "Multi-method",
 };
 
 export default function Providers() {
@@ -148,7 +162,7 @@ export default function Providers() {
 
       {/* Service kind filter */}
       <div className="flex flex-wrap gap-1.5">
-        {(["all", "llm", "embedding", "tts", "stt", "image", "webSearch"] as const).map((kind) => (
+        {(["all", "llm", "embedding", "tts", "stt", "image", "imageToText", "webSearch", "webFetch"] as const).map((kind) => (
           <Button
             key={kind}
             variant={kindFilter === kind ? "default" : "secondary"}
@@ -222,7 +236,7 @@ export default function Providers() {
                           </div>
                           <div className="flex items-center gap-1.5">
                             <AuthIcon className="h-3 w-3 text-muted-foreground" />
-                            <span className="text-[11px] text-muted-foreground">{provider.authMethod}</span>
+                            <span className="text-[11px] text-muted-foreground">{authMethodLabels[provider.authMethod] || provider.authMethod}</span>
                           </div>
                           {errorConns > 0 && (
                             <div className="flex items-center gap-1.5">

@@ -100,7 +100,7 @@ export interface StatsCardData {
 
 // Provider Tiers (inspired by 9router's 4-tier system)
 export type ProviderTier = 'free' | 'free-tier' | 'subscription' | 'api-key';
-export type AuthMethod = 'oauth-pkce' | 'oauth-basic' | 'device-code' | 'token-import' | 'api-key' | 'none';
+export type AuthMethod = 'oauth-pkce' | 'oauth-authcode' | 'device-code' | 'device-code-pkce' | 'token-import' | 'api-key' | 'noAuth' | 'multi-method';
 export type AccountStrategy = 'fill-first' | 'round-robin';
 export type ServiceKind = 'llm' | 'embedding' | 'tts' | 'stt' | 'image' | 'imageToText' | 'webSearch' | 'webFetch' | 'video' | 'music';
 export type ConnectionStatus = 'connected' | 'disconnected' | 'error' | 'rate-limited' | 'cooldown' | 'expired';
@@ -133,18 +133,77 @@ export interface AIProviderEnhanced extends AIProvider {
   connections: ProviderConnection[];
   strategy: AccountStrategy;
   stickyLimit: number;
-  oauthConfig?: {
-    clientId: string;
-    authUrl: string;
-    tokenUrl: string;
-    usePkce: boolean;
-    scopes: string[];
-  };
+  authMethods?: KiroAuthMethod[]; // For multi-method providers like Kiro
+  oauthConfig?: OAuthConfig;
   freeModels?: string[];
   quotaSupported: boolean;
   deprecated: boolean;
+  deprecationNotice?: string;
   cooldownMs: number;
   maxRetries: number;
+  website?: string;
+  textIcon?: string;
+  noAuth?: boolean;
+  passthroughModels?: boolean;
+  notice?: {
+    text: string;
+    apiKeyUrl?: string;
+  };
+}
+
+// ============================================================
+// Kiro / Cursor / OAuth specific types
+// ============================================================
+
+export type KiroAuthMethod = 'builder-id' | 'idc' | 'google' | 'github' | 'import';
+
+export interface KiroIDCConfig {
+  startUrl: string;
+  region: string;
+}
+
+export interface DeviceCodeData {
+  userCode: string;
+  verificationUri: string;
+  verificationUriComplete?: string;
+  expiresIn: number;
+  interval: number;
+}
+
+export interface OAuthConfig {
+  clientId: string;
+  authUrl: string;
+  tokenUrl: string;
+  usePkce: boolean;
+  scopes: string[];
+  codeChallengeMethod?: string;
+  deviceCodeUrl?: string;
+  apiKeyUrl?: string;
+  extraParams?: Record<string, string>;
+  copilotTokenUrl?: string;
+  // Cursor-specific
+  tokenStoragePaths?: {
+    linux: string;
+    macos: string;
+    windows: string;
+  };
+  dbKeys?: {
+    accessToken: string;
+    machineId: string;
+  };
+  // Kiro-specific
+  ssoOidcEndpoint?: string;
+  startUrl?: string;
+  socialAuthEndpoint?: string;
+  authMethods?: KiroAuthMethod[];
+  // iFlow-specific
+  clientSecret?: string;
+  extraLoginParams?: Record<string, string>;
+}
+
+export interface CursorTokenData {
+  accessToken: string;
+  machineId: string;
 }
 
 export interface ModelPricing {

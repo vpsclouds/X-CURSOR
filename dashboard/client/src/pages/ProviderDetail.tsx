@@ -41,6 +41,8 @@ import {
   connectionStatusColors,
 } from "../data/mock-data";
 import OAuthModal from "@/components/shared/OAuthModal";
+import KiroAuthModal from "@/components/shared/KiroAuthModal";
+import CursorAuthModal from "@/components/shared/CursorAuthModal";
 import PricingModal from "@/components/shared/PricingModal";
 import { useToast } from "@/hooks/use-toast";
 import type { ProviderConnection } from "../types";
@@ -285,14 +287,41 @@ export default function ProviderDetail() {
         </Card>
       )}
 
-      <OAuthModal
-        provider={provider}
-        open={showOAuth}
-        onOpenChange={setShowOAuth}
-        onSuccess={(name) => {
-          toast({ title: "Connected", description: `${name} added to ${provider.name}` });
-        }}
-      />
+      {/* Kiro uses its own multi-method modal */}
+      {provider.id === 'kiro' && (
+        <KiroAuthModal
+          provider={provider}
+          open={showOAuth}
+          onOpenChange={setShowOAuth}
+          onSuccess={(name) => {
+            toast({ title: "Connected", description: `${name} added to ${provider.name}` });
+          }}
+        />
+      )}
+
+      {/* Cursor uses its own token import modal */}
+      {provider.id === 'cursor' && (
+        <CursorAuthModal
+          provider={provider}
+          open={showOAuth}
+          onOpenChange={setShowOAuth}
+          onSuccess={(name) => {
+            toast({ title: "Connected", description: `${name} added to ${provider.name}` });
+          }}
+        />
+      )}
+
+      {/* All other providers use the generic OAuthModal */}
+      {provider.id !== 'kiro' && provider.id !== 'cursor' && (
+        <OAuthModal
+          provider={provider}
+          open={showOAuth}
+          onOpenChange={setShowOAuth}
+          onSuccess={(name) => {
+            toast({ title: "Connected", description: `${name} added to ${provider.name}` });
+          }}
+        />
+      )}
 
       <PricingModal
         open={showPricing}

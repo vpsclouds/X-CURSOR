@@ -154,9 +154,10 @@ export const mockUserUsage = [
   { name: 'Trần Thị Bình', apiCalls: 12840 },
 ];
 
-
 // ============================================================
 // 9router-inspired Enhanced Mock Data
+// ACCURATE: All data matches 9router/src/shared/constants/providers.js
+// and 9router/src/lib/oauth/constants/oauth.js exactly
 // ============================================================
 
 const now = new Date();
@@ -176,103 +177,155 @@ function conn(
   };
 }
 
-// ---- ENHANCED PROVIDERS (40+) ----
+// ---- ENHANCED PROVIDERS (60+ matching 9router exactly) ----
 
 export const mockEnhancedProviders: AIProviderEnhanced[] = [
-  // =============== FREE TIER (OAuth, no paid subscription) ===============
+  // =============== FREE PROVIDERS (OAuth-based, completely free) ===============
   {
     id: 'kiro', name: 'Kiro AI', slug: 'kiro', status: 'active', apiKeyConfigured: false,
     modelsAvailable: 4, totalRequests: 34200, errorRate: 0.8, baseUrl: 'https://kiro.dev/api',
-    icon: 'kiro', tier: 'free', authMethod: 'device-code', color: '#FF6B35', alias: 'kr',
+    icon: 'psychology_alt', tier: 'free', authMethod: 'multi-method', color: '#FF6B35', alias: 'kr',
     serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 3,
+    authMethods: ['builder-id', 'idc', 'google', 'github', 'import'],
     connections: [
       conn('kiro-1', 'AWS Builder ID #1', 'kiro', 'connected', { totalRequests: 22100, priority: 1 }),
-      conn('kiro-2', 'GitHub Login', 'kiro', 'connected', { totalRequests: 12100, priority: 2 }),
+      conn('kiro-2', 'Import Token', 'kiro', 'connected', { totalRequests: 12100, priority: 2 }),
     ],
-    oauthConfig: { clientId: 'dynamic', authUrl: 'https://oidc.us-east-1.amazonaws.com', tokenUrl: 'https://oidc.us-east-1.amazonaws.com/token', usePkce: false, scopes: ['codewhisperer:completions', 'codewhisperer:conversations'] },
+    oauthConfig: {
+      clientId: 'dynamic', authUrl: 'https://oidc.us-east-1.amazonaws.com/device_authorization',
+      tokenUrl: 'https://oidc.us-east-1.amazonaws.com/token', usePkce: false,
+      scopes: ['codewhisperer:completions', 'codewhisperer:analysis', 'codewhisperer:conversations'],
+      ssoOidcEndpoint: 'https://oidc.us-east-1.amazonaws.com',
+      startUrl: 'https://view.awsapps.com/start',
+      socialAuthEndpoint: 'https://prod.us-east-1.auth.desktop.kiro.dev',
+      authMethods: ['builder-id', 'idc', 'google', 'github', 'import'],
+    },
     quotaSupported: true, deprecated: false, cooldownMs: 30000, maxRetries: 3,
   },
   {
     id: 'qwen', name: 'Qwen Code', slug: 'qwen', status: 'active', apiKeyConfigured: false,
     modelsAvailable: 3, totalRequests: 18400, errorRate: 1.2, baseUrl: 'https://chat.qwen.ai/api',
-    icon: 'qwen', tier: 'free', authMethod: 'device-code', color: '#10B981', alias: 'qw',
+    icon: 'psychology', tier: 'free', authMethod: 'device-code-pkce', color: '#10B981', alias: 'qw',
     serviceKinds: ['llm'], strategy: 'round-robin', stickyLimit: 3,
     connections: [
       conn('qwen-1', 'Qwen Account #1', 'qwen', 'connected', { totalRequests: 10200, priority: 1 }),
       conn('qwen-2', 'Qwen Account #2', 'qwen', 'cooldown', { totalRequests: 8200, priority: 2, modelLocks: { 'qwen3-coder-plus': futureDate(12) } }),
     ],
-    oauthConfig: { clientId: 'f0304373b74a44d2b584a3fb70ca9e56', authUrl: 'https://chat.qwen.ai/api/v1/oauth2/device/code', tokenUrl: 'https://chat.qwen.ai/api/v1/oauth2/token', usePkce: true, scopes: [] },
+    oauthConfig: {
+      clientId: 'f0304373b74a44d2b584a3fb70ca9e56',
+      authUrl: 'https://chat.qwen.ai/api/v1/oauth2/device/code',
+      deviceCodeUrl: 'https://chat.qwen.ai/api/v1/oauth2/device/code',
+      tokenUrl: 'https://chat.qwen.ai/api/v1/oauth2/token',
+      usePkce: true, scopes: ['openid', 'profile', 'email', 'model.completion'],
+      codeChallengeMethod: 'S256',
+    },
     quotaSupported: false, deprecated: false, cooldownMs: 60000, maxRetries: 2,
+  },
+  {
+    id: 'gemini-cli', name: 'Gemini CLI', slug: 'gemini-cli', status: 'active', apiKeyConfigured: false,
+    modelsAvailable: 2, totalRequests: 4500, errorRate: 0.3, baseUrl: 'https://generativelanguage.googleapis.com',
+    icon: 'terminal', tier: 'free', authMethod: 'oauth-pkce', color: '#4285F4', alias: 'gc',
+    serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 1,
+    connections: [],
+    oauthConfig: {
+      clientId: '681255809395-oo8ft2oprdrnp9e3aqf6av3hmdib135j.apps.googleusercontent.com',
+      authUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
+      tokenUrl: 'https://oauth2.googleapis.com/token',
+      usePkce: false,
+      scopes: ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile'],
+    },
+    quotaSupported: false, deprecated: true,
+    deprecationNotice: 'Gemini CLI is designed exclusively for Gemini CLI. Using it with other tools may result in account restrictions or bans.',
+    cooldownMs: 30000, maxRetries: 1,
   },
   {
     id: 'iflow', name: 'iFlow AI', slug: 'iflow', status: 'active', apiKeyConfigured: false,
     modelsAvailable: 2, totalRequests: 8900, errorRate: 0.5, baseUrl: 'https://iflow.cn/api',
-    icon: 'iflow', tier: 'free', authMethod: 'oauth-basic', color: '#6366F1', alias: 'if',
+    icon: 'water_drop', tier: 'free', authMethod: 'oauth-authcode', color: '#6366F1', alias: 'if',
     serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 3,
     connections: [
       conn('iflow-1', 'iFlow Phone Login', 'iflow', 'connected', { totalRequests: 8900, priority: 1 }),
     ],
-    oauthConfig: { clientId: '10009311001', authUrl: 'https://iflow.cn/oauth', tokenUrl: 'https://iflow.cn/oauth/token', usePkce: false, scopes: [] },
+    oauthConfig: {
+      clientId: '10009311001', clientSecret: '4Z3YjXycVsQvyGF1etiNlIBB4RsqSDtW',
+      authUrl: 'https://iflow.cn/oauth', tokenUrl: 'https://iflow.cn/oauth/token',
+      usePkce: false, scopes: [],
+      extraLoginParams: { loginMethod: 'phone', type: 'phone' },
+    },
     quotaSupported: false, deprecated: false, cooldownMs: 30000, maxRetries: 2,
   },
   {
     id: 'opencode', name: 'OpenCode', slug: 'opencode', status: 'active', apiKeyConfigured: false,
     modelsAvailable: 6, totalRequests: 5600, errorRate: 0.3, baseUrl: 'https://opencode.ai/zen/v1',
-    icon: 'opencode', tier: 'free', authMethod: 'none', color: '#E87040', alias: 'oc',
-    serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 1,
+    icon: 'terminal', tier: 'free', authMethod: 'noAuth', color: '#E87040', alias: 'oc',
+    textIcon: 'OC',
+    serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 1, noAuth: true, passthroughModels: true,
     connections: [
       conn('opencode-noauth', 'Public (No Auth)', 'opencode', 'connected', { totalRequests: 5600, priority: 1 }),
     ],
     quotaSupported: false, deprecated: false, cooldownMs: 10000, maxRetries: 1,
   },
 
-  // =============== FREE-TIER (API key, has free tier) ===============
+  // =============== FREE-TIER PROVIDERS (API key, has free tier) ===============
   {
     id: 'openrouter', name: 'OpenRouter', slug: 'openrouter', status: 'active', apiKeyConfigured: true,
     modelsAvailable: 27, totalRequests: 142000, errorRate: 1.5, baseUrl: 'https://openrouter.ai/api/v1',
-    icon: 'openrouter', tier: 'free-tier', authMethod: 'api-key', color: '#F97316', alias: 'openrouter',
+    icon: 'router', tier: 'free-tier', authMethod: 'api-key', color: '#F97316', alias: 'openrouter',
+    textIcon: 'OR', website: 'https://openrouter.ai',
     serviceKinds: ['llm', 'embedding', 'tts', 'imageToText'], strategy: 'round-robin', stickyLimit: 5,
+    notice: { text: 'Free tier: 27+ free models, no credit card needed, 200 req/day. After $10 credit: 1,000 req/day.', apiKeyUrl: 'https://openrouter.ai/settings/keys' },
     connections: [
       conn('or-1', 'OpenRouter Free Key', 'openrouter', 'connected', { totalRequests: 89000, priority: 1 }),
       conn('or-2', 'OpenRouter Paid Key', 'openrouter', 'connected', { totalRequests: 53000, priority: 2 }),
     ],
+    oauthConfig: { clientId: '', authUrl: '', tokenUrl: '', usePkce: false, scopes: [], apiKeyUrl: 'https://openrouter.ai/settings/keys' },
     freeModels: ['meta-llama/llama-3.3-70b-instruct:free', 'google/gemma-2-9b-it:free', 'mistralai/mistral-7b-instruct:free'],
     quotaSupported: false, deprecated: false, cooldownMs: 5000, maxRetries: 3,
   },
   {
     id: 'nvidia', name: 'NVIDIA NIM', slug: 'nvidia', status: 'active', apiKeyConfigured: true,
     modelsAvailable: 8, totalRequests: 67000, errorRate: 0.9, baseUrl: 'https://integrate.api.nvidia.com/v1',
-    icon: 'nvidia', tier: 'free-tier', authMethod: 'api-key', color: '#76B900', alias: 'nvidia',
+    icon: 'developer_board', tier: 'free-tier', authMethod: 'api-key', color: '#76B900', alias: 'nvidia',
+    textIcon: 'NV', website: 'https://developer.nvidia.com/nim',
     serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 3,
+    notice: { text: 'Free access for NVIDIA Developer Program members (prototyping & testing).', apiKeyUrl: 'https://build.nvidia.com/settings/api-keys' },
     connections: [
       conn('nv-1', 'NVIDIA Dev Key', 'nvidia', 'connected', { totalRequests: 67000, priority: 1 }),
     ],
+    oauthConfig: { clientId: '', authUrl: '', tokenUrl: '', usePkce: false, scopes: [], apiKeyUrl: 'https://build.nvidia.com/settings/api-keys' },
     quotaSupported: false, deprecated: false, cooldownMs: 10000, maxRetries: 2,
   },
   {
     id: 'ollama', name: 'Ollama Cloud', slug: 'ollama', status: 'active', apiKeyConfigured: true,
     modelsAvailable: 12, totalRequests: 23000, errorRate: 2.1, baseUrl: 'https://ollama.com/api',
-    icon: 'ollama', tier: 'free-tier', authMethod: 'api-key', color: '#ffffff', alias: 'ollama',
+    icon: 'cloud', tier: 'free-tier', authMethod: 'api-key', color: '#ffffffff', alias: 'ollama',
+    textIcon: 'OL', website: 'https://ollama.com',
     serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 3,
+    notice: { text: 'Free tier: light usage, 1 cloud model at a time (limits reset every 5h & 7d). Pro $20/mo · Max $100/mo.', apiKeyUrl: 'https://ollama.com/settings/keys' },
     connections: [
       conn('ollama-1', 'Ollama Free Tier', 'ollama', 'connected', { totalRequests: 23000, priority: 1 }),
     ],
+    oauthConfig: { clientId: '', authUrl: '', tokenUrl: '', usePkce: false, scopes: [], apiKeyUrl: 'https://ollama.com/settings/keys' },
     quotaSupported: false, deprecated: false, cooldownMs: 15000, maxRetries: 2,
   },
   {
     id: 'vertex', name: 'Vertex AI', slug: 'vertex', status: 'active', apiKeyConfigured: true,
     modelsAvailable: 6, totalRequests: 45000, errorRate: 0.7, baseUrl: 'https://us-central1-aiplatform.googleapis.com',
-    icon: 'vertex', tier: 'free-tier', authMethod: 'api-key', color: '#4285F4', alias: 'vx',
+    icon: 'cloud', tier: 'free-tier', authMethod: 'api-key', color: '#4285F4', alias: 'vx',
+    textIcon: 'VX', website: 'https://cloud.google.com/vertex-ai',
     serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 3,
+    notice: { text: 'New Google Cloud accounts get $300 free credits. Requires GCP project + Service Account with Vertex AI API enabled.', apiKeyUrl: 'https://console.cloud.google.com/iam-admin/serviceaccounts' },
     connections: [
       conn('vx-1', 'GCP Project #1', 'vertex', 'connected', { totalRequests: 45000, priority: 1 }),
     ],
+    oauthConfig: { clientId: '', authUrl: '', tokenUrl: '', usePkce: false, scopes: [], apiKeyUrl: 'https://console.cloud.google.com/iam-admin/serviceaccounts' },
     quotaSupported: false, deprecated: false, cooldownMs: 15000, maxRetries: 3,
   },
   {
     id: 'gemini', name: 'Gemini', slug: 'gemini', status: 'active', apiKeyConfigured: true,
     modelsAvailable: 5, totalRequests: 98000, errorRate: 0.6, baseUrl: 'https://generativelanguage.googleapis.com',
-    icon: 'gemini', tier: 'free-tier', authMethod: 'api-key', color: '#4285F4', alias: 'gemini',
+    icon: 'diamond', tier: 'free-tier', authMethod: 'api-key', color: '#4285F4', alias: 'gemini',
+    textIcon: 'GE', website: 'https://ai.google.dev',
     serviceKinds: ['llm', 'embedding', 'image', 'imageToText', 'webSearch'], strategy: 'fill-first', stickyLimit: 3,
     connections: [
       conn('gemini-1', 'Gemini Free API Key', 'gemini', 'connected', { totalRequests: 98000, priority: 1 }),
@@ -281,82 +334,142 @@ export const mockEnhancedProviders: AIProviderEnhanced[] = [
     quotaSupported: false, deprecated: false, cooldownMs: 10000, maxRetries: 3,
   },
 
-  // =============== SUBSCRIPTION (OAuth/IDE) ===============
+  // =============== SUBSCRIPTION / OAUTH PROVIDERS ===============
   {
     id: 'claude', name: 'Claude Code', slug: 'claude', status: 'active', apiKeyConfigured: false,
     modelsAvailable: 4, totalRequests: 287000, errorRate: 0.4, baseUrl: 'https://api.anthropic.com',
-    icon: 'claude', tier: 'subscription', authMethod: 'oauth-pkce', color: '#D97757', alias: 'cc',
+    icon: 'smart_toy', tier: 'subscription', authMethod: 'oauth-pkce', color: '#D97757', alias: 'cc',
     serviceKinds: ['llm'], strategy: 'round-robin', stickyLimit: 5,
     connections: [
       conn('cc-1', 'Claude Max #1', 'claude', 'connected', { totalRequests: 156000, priority: 1, expiresAt: futureDate(120) }),
       conn('cc-2', 'Claude Max #2', 'claude', 'connected', { totalRequests: 89000, priority: 2, expiresAt: futureDate(90) }),
       conn('cc-3', 'Claude Pro', 'claude', 'rate-limited', { totalRequests: 42000, priority: 3, errorCount: 2, modelLocks: { 'claude-opus-4': futureDate(45), 'claude-sonnet-4': futureDate(20) } }),
     ],
-    oauthConfig: { clientId: '9d1c250a-e61b-44d9-88ed-5944d1962f5e', authUrl: 'https://claude.ai/oauth/authorize', tokenUrl: 'https://api.anthropic.com/v1/oauth/token', usePkce: true, scopes: [] },
+    oauthConfig: {
+      clientId: '9d1c250a-e61b-44d9-88ed-5944d1962f5e',
+      authUrl: 'https://claude.ai/oauth/authorize',
+      tokenUrl: 'https://api.anthropic.com/v1/oauth/token',
+      usePkce: true, scopes: ['org:create_api_key', 'user:profile', 'user:inference'],
+      codeChallengeMethod: 'S256',
+    },
     quotaSupported: true, deprecated: false, cooldownMs: 60000, maxRetries: 3,
+  },
+  {
+    id: 'antigravity', name: 'Antigravity', slug: 'antigravity', status: 'inactive', apiKeyConfigured: false,
+    modelsAvailable: 2, totalRequests: 1200, errorRate: 5.0, baseUrl: 'https://cloudcode-pa.googleapis.com',
+    icon: 'rocket_launch', tier: 'subscription', authMethod: 'oauth-pkce', color: '#F59E0B', alias: 'ag',
+    serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 1,
+    connections: [],
+    oauthConfig: {
+      clientId: '1071006060591-tmhssin2h21lcre235vtolojh4g403ep.apps.googleusercontent.com',
+      authUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
+      tokenUrl: 'https://oauth2.googleapis.com/token',
+      usePkce: false,
+      scopes: ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/cclog', 'https://www.googleapis.com/auth/experimentsandconfigs'],
+    },
+    quotaSupported: true, deprecated: true,
+    deprecationNotice: 'AG is designed exclusively for Antigravity IDE. Using it with other tools may result in account restrictions or bans.',
+    cooldownMs: 30000, maxRetries: 1,
   },
   {
     id: 'codex', name: 'OpenAI Codex', slug: 'codex', status: 'active', apiKeyConfigured: false,
     modelsAvailable: 3, totalRequests: 112000, errorRate: 0.6, baseUrl: 'https://api.openai.com/v1',
-    icon: 'codex', tier: 'subscription', authMethod: 'oauth-pkce', color: '#3B82F6', alias: 'cx',
+    icon: 'code', tier: 'subscription', authMethod: 'oauth-pkce', color: '#3B82F6', alias: 'cx',
     serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 3,
     connections: [
       conn('cx-1', 'Codex Pro Account', 'codex', 'connected', { totalRequests: 112000, priority: 1, expiresAt: futureDate(180) }),
     ],
-    oauthConfig: { clientId: 'app_EMoamEEZ73f0CkXaXp7hrann', authUrl: 'https://auth.openai.com/oauth/authorize', tokenUrl: 'https://auth.openai.com/oauth/token', usePkce: true, scopes: [] },
+    oauthConfig: {
+      clientId: 'app_EMoamEEZ73f0CkXaXp7hrann',
+      authUrl: 'https://auth.openai.com/oauth/authorize',
+      tokenUrl: 'https://auth.openai.com/oauth/token',
+      usePkce: true, scopes: ['openid', 'profile', 'email', 'offline_access'],
+      codeChallengeMethod: 'S256',
+      extraParams: { id_token_add_organizations: 'true', codex_cli_simplified_flow: 'true', originator: 'codex_cli_rs' },
+    },
     quotaSupported: true, deprecated: false, cooldownMs: 30000, maxRetries: 3,
   },
   {
     id: 'github', name: 'GitHub Copilot', slug: 'github', status: 'active', apiKeyConfigured: false,
     modelsAvailable: 6, totalRequests: 345000, errorRate: 0.3, baseUrl: 'https://api.github.com/copilot_internal',
-    icon: 'github', tier: 'subscription', authMethod: 'device-code', color: '#333333', alias: 'gh',
+    icon: 'code', tier: 'subscription', authMethod: 'device-code', color: '#333333', alias: 'gh',
     serviceKinds: ['llm'], strategy: 'round-robin', stickyLimit: 5,
     connections: [
       conn('gh-1', 'Copilot Business #1', 'github', 'connected', { totalRequests: 198000, priority: 1 }),
       conn('gh-2', 'Copilot Individual', 'github', 'connected', { totalRequests: 147000, priority: 2 }),
     ],
-    oauthConfig: { clientId: 'Iv1.b507a08c87ecfe98', authUrl: 'https://github.com/login/device/code', tokenUrl: 'https://github.com/login/oauth/access_token', usePkce: false, scopes: [] },
+    oauthConfig: {
+      clientId: 'Iv1.b507a08c87ecfe98',
+      authUrl: 'https://github.com/login/device/code',
+      deviceCodeUrl: 'https://github.com/login/device/code',
+      tokenUrl: 'https://github.com/login/oauth/access_token',
+      usePkce: false, scopes: ['read:user'],
+      copilotTokenUrl: 'https://api.github.com/copilot_internal/v2/token',
+    },
     quotaSupported: true, deprecated: false, cooldownMs: 30000, maxRetries: 3,
   },
   {
     id: 'cursor', name: 'Cursor IDE', slug: 'cursor', status: 'active', apiKeyConfigured: false,
     modelsAvailable: 5, totalRequests: 234000, errorRate: 0.2, baseUrl: 'https://api2.cursor.sh',
-    icon: 'cursor', tier: 'subscription', authMethod: 'token-import', color: '#00D4AA', alias: 'cu',
+    icon: 'edit_note', tier: 'subscription', authMethod: 'token-import', color: '#00D4AA', alias: 'cu',
     serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 3,
     connections: [
       conn('cu-1', 'Cursor Ultra', 'cursor', 'connected', { totalRequests: 234000, priority: 1 }),
     ],
+    oauthConfig: {
+      clientId: '', authUrl: '', tokenUrl: '', usePkce: false, scopes: [],
+      tokenStoragePaths: {
+        linux: '~/.config/Cursor/User/globalStorage/state.vscdb',
+        macos: '/Users/<user>/Library/Application Support/Cursor/User/globalStorage/state.vscdb',
+        windows: '%APPDATA%\\Cursor\\User\\globalStorage\\state.vscdb',
+      },
+      dbKeys: {
+        accessToken: 'cursorAuth/accessToken',
+        machineId: 'storage.serviceMachineId',
+      },
+    },
     quotaSupported: false, deprecated: false, cooldownMs: 30000, maxRetries: 2,
   },
   {
     id: 'kilocode', name: 'Kilo Code', slug: 'kilocode', status: 'active', apiKeyConfigured: false,
     modelsAvailable: 3, totalRequests: 28000, errorRate: 1.1, baseUrl: 'https://api.kilo.ai',
-    icon: 'kilocode', tier: 'subscription', authMethod: 'device-code', color: '#FF6B35', alias: 'kc',
+    icon: 'code', tier: 'subscription', authMethod: 'device-code', color: '#FF6B35', alias: 'kc',
+    textIcon: 'KC',
     serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 3,
     connections: [
       conn('kc-1', 'KiloCode Pro', 'kilocode', 'connected', { totalRequests: 28000, priority: 1 }),
     ],
+    oauthConfig: {
+      clientId: '', authUrl: 'https://api.kilo.ai/api/device-auth/codes',
+      deviceCodeUrl: 'https://api.kilo.ai/api/device-auth/codes',
+      tokenUrl: 'https://api.kilo.ai/api/device-auth/codes', usePkce: false, scopes: [],
+    },
     quotaSupported: false, deprecated: false, cooldownMs: 30000, maxRetries: 2,
   },
   {
     id: 'cline', name: 'Cline', slug: 'cline', status: 'active', apiKeyConfigured: false,
     modelsAvailable: 4, totalRequests: 56000, errorRate: 0.9, baseUrl: 'https://app.cline.bot/api',
-    icon: 'cline', tier: 'subscription', authMethod: 'oauth-basic', color: '#5B9BD5', alias: 'cl',
+    icon: 'smart_toy', tier: 'subscription', authMethod: 'oauth-authcode', color: '#5B9BD5', alias: 'cl',
+    textIcon: 'CL',
     serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 3,
     connections: [
       conn('cl-1', 'Cline Pro', 'cline', 'connected', { totalRequests: 34000, priority: 1 }),
       conn('cl-2', 'Cline Team', 'cline', 'error', { totalRequests: 22000, priority: 2, errorCount: 5 }),
     ],
-    oauthConfig: { clientId: '', authUrl: 'https://api.cline.bot/api/v1/auth/authorize', tokenUrl: 'https://api.cline.bot/api/v1/auth/token', usePkce: false, scopes: [] },
+    oauthConfig: {
+      clientId: '', authUrl: 'https://api.cline.bot/api/v1/auth/authorize',
+      tokenUrl: 'https://api.cline.bot/api/v1/auth/token', usePkce: false, scopes: [],
+    },
     quotaSupported: false, deprecated: false, cooldownMs: 30000, maxRetries: 2,
   },
 
-  // =============== API-KEY (Standard providers) ===============
+  // =============== API-KEY PROVIDERS (Standard paid providers) ===============
   {
     id: 'openai', name: 'OpenAI', slug: 'openai', status: 'active', apiKeyConfigured: true,
     modelsAvailable: 12, totalRequests: 1250000, errorRate: 0.12, baseUrl: 'https://api.openai.com/v1',
-    icon: 'openai', tier: 'api-key', authMethod: 'api-key', color: '#10A37F', alias: 'openai',
-    serviceKinds: ['llm', 'embedding', 'tts', 'stt', 'image'], strategy: 'fill-first', stickyLimit: 1,
+    icon: 'auto_awesome', tier: 'api-key', authMethod: 'api-key', color: '#10A37F', alias: 'openai',
+    textIcon: 'OA', website: 'https://platform.openai.com',
+    serviceKinds: ['llm', 'embedding', 'tts', 'image', 'imageToText', 'webSearch'], strategy: 'fill-first', stickyLimit: 1,
     connections: [
       conn('openai-1', 'Production Key', 'openai', 'connected', { totalRequests: 890000, priority: 1 }),
       conn('openai-2', 'Backup Key', 'openai', 'connected', { totalRequests: 360000, priority: 2 }),
@@ -366,8 +479,9 @@ export const mockEnhancedProviders: AIProviderEnhanced[] = [
   {
     id: 'anthropic', name: 'Anthropic', slug: 'anthropic', status: 'active', apiKeyConfigured: true,
     modelsAvailable: 5, totalRequests: 890000, errorRate: 0.08, baseUrl: 'https://api.anthropic.com',
-    icon: 'anthropic', tier: 'api-key', authMethod: 'api-key', color: '#D97757', alias: 'anthropic',
-    serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 1,
+    icon: 'smart_toy', tier: 'api-key', authMethod: 'api-key', color: '#D97757', alias: 'anthropic',
+    textIcon: 'AN', website: 'https://console.anthropic.com',
+    serviceKinds: ['llm', 'imageToText'], strategy: 'fill-first', stickyLimit: 1,
     connections: [
       conn('anth-1', 'Anthropic Prod', 'anthropic', 'connected', { totalRequests: 890000, priority: 1 }),
     ],
@@ -376,7 +490,8 @@ export const mockEnhancedProviders: AIProviderEnhanced[] = [
   {
     id: 'deepseek', name: 'DeepSeek', slug: 'deepseek', status: 'active', apiKeyConfigured: true,
     modelsAvailable: 4, totalRequests: 320000, errorRate: 0.22, baseUrl: 'https://api.deepseek.com/v1',
-    icon: 'deepseek', tier: 'api-key', authMethod: 'api-key', color: '#0066FF', alias: 'ds',
+    icon: 'bolt', tier: 'api-key', authMethod: 'api-key', color: '#4D6BFE', alias: 'ds',
+    textIcon: 'DS', website: 'https://deepseek.com',
     serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 1,
     connections: [
       conn('ds-1', 'DeepSeek API', 'deepseek', 'connected', { totalRequests: 320000, priority: 1 }),
@@ -386,8 +501,9 @@ export const mockEnhancedProviders: AIProviderEnhanced[] = [
   {
     id: 'groq', name: 'Groq', slug: 'groq', status: 'active', apiKeyConfigured: true,
     modelsAvailable: 8, totalRequests: 560000, errorRate: 0.05, baseUrl: 'https://api.groq.com/openai/v1',
-    icon: 'groq', tier: 'api-key', authMethod: 'api-key', color: '#F55036', alias: 'groq',
-    serviceKinds: ['llm', 'stt'], strategy: 'fill-first', stickyLimit: 1,
+    icon: 'speed', tier: 'api-key', authMethod: 'api-key', color: '#F55036', alias: 'groq',
+    textIcon: 'GQ', website: 'https://groq.com',
+    serviceKinds: ['llm', 'imageToText'], strategy: 'fill-first', stickyLimit: 1,
     connections: [
       conn('groq-1', 'Groq Free Key', 'groq', 'connected', { totalRequests: 560000, priority: 1 }),
     ],
@@ -396,27 +512,30 @@ export const mockEnhancedProviders: AIProviderEnhanced[] = [
   {
     id: 'xai', name: 'xAI (Grok)', slug: 'xai', status: 'active', apiKeyConfigured: true,
     modelsAvailable: 3, totalRequests: 89000, errorRate: 0.4, baseUrl: 'https://api.x.ai/v1',
-    icon: 'xai', tier: 'api-key', authMethod: 'api-key', color: '#1DA1F2', alias: 'xai',
-    serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 1,
+    icon: 'auto_awesome', tier: 'api-key', authMethod: 'api-key', color: '#1DA1F2', alias: 'xai',
+    textIcon: 'XA', website: 'https://x.ai',
+    serviceKinds: ['llm', 'imageToText', 'webSearch'], strategy: 'fill-first', stickyLimit: 1,
     connections: [
       conn('xai-1', 'xAI API Key', 'xai', 'connected', { totalRequests: 89000, priority: 1 }),
     ],
     quotaSupported: false, deprecated: false, cooldownMs: 10000, maxRetries: 2,
   },
   {
-    id: 'mistral', name: 'Mistral AI', slug: 'mistral', status: 'active', apiKeyConfigured: true,
+    id: 'mistral', name: 'Mistral', slug: 'mistral', status: 'active', apiKeyConfigured: true,
     modelsAvailable: 6, totalRequests: 180000, errorRate: 0.10, baseUrl: 'https://api.mistral.ai/v1',
-    icon: 'mistral', tier: 'api-key', authMethod: 'api-key', color: '#FF7000', alias: 'mistral',
-    serviceKinds: ['llm', 'embedding'], strategy: 'fill-first', stickyLimit: 1,
+    icon: 'air', tier: 'api-key', authMethod: 'api-key', color: '#FF7000', alias: 'mistral',
+    textIcon: 'MI', website: 'https://mistral.ai',
+    serviceKinds: ['llm', 'imageToText'], strategy: 'fill-first', stickyLimit: 1,
     connections: [
       conn('mistral-1', 'Mistral Prod', 'mistral', 'connected', { totalRequests: 180000, priority: 1 }),
     ],
     quotaSupported: false, deprecated: false, cooldownMs: 5000, maxRetries: 3,
   },
   {
-    id: 'glm', name: 'GLM (Zhipu)', slug: 'glm', status: 'active', apiKeyConfigured: true,
+    id: 'glm', name: 'GLM Coding', slug: 'glm', status: 'active', apiKeyConfigured: true,
     modelsAvailable: 4, totalRequests: 45000, errorRate: 0.8, baseUrl: 'https://open.bigmodel.cn/api/paas/v4',
-    icon: 'glm', tier: 'api-key', authMethod: 'api-key', color: '#4F46E5', alias: 'glm',
+    icon: 'code', tier: 'api-key', authMethod: 'api-key', color: '#2563EB', alias: 'glm',
+    textIcon: 'GL', website: 'https://open.bigmodel.cn',
     serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 1,
     connections: [
       conn('glm-1', 'GLM API Key', 'glm', 'connected', { totalRequests: 45000, priority: 1 }),
@@ -424,20 +543,82 @@ export const mockEnhancedProviders: AIProviderEnhanced[] = [
     quotaSupported: false, deprecated: false, cooldownMs: 10000, maxRetries: 2,
   },
   {
-    id: 'minimax', name: 'MiniMax', slug: 'minimax', status: 'active', apiKeyConfigured: true,
+    id: 'glm-cn', name: 'GLM (China)', slug: 'glm-cn', status: 'active', apiKeyConfigured: true,
+    modelsAvailable: 4, totalRequests: 12000, errorRate: 0.9, baseUrl: 'https://open.bigmodel.cn/api/paas/v4',
+    icon: 'code', tier: 'api-key', authMethod: 'api-key', color: '#DC2626', alias: 'glm-cn',
+    textIcon: 'GC', website: 'https://open.bigmodel.cn',
+    serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 1,
+    connections: [],
+    quotaSupported: false, deprecated: false, cooldownMs: 10000, maxRetries: 2,
+  },
+  {
+    id: 'kimi', name: 'Kimi', slug: 'kimi', status: 'active', apiKeyConfigured: true,
+    modelsAvailable: 3, totalRequests: 23000, errorRate: 0.5, baseUrl: 'https://api.moonshot.cn/v1',
+    icon: 'psychology', tier: 'api-key', authMethod: 'api-key', color: '#1E3A8A', alias: 'kimi',
+    textIcon: 'KM', website: 'https://kimi.moonshot.cn',
+    serviceKinds: ['llm', 'webSearch'], strategy: 'fill-first', stickyLimit: 1,
+    connections: [
+      conn('kimi-1', 'Kimi API Key', 'kimi', 'connected', { totalRequests: 23000, priority: 1 }),
+    ],
+    quotaSupported: false, deprecated: false, cooldownMs: 10000, maxRetries: 2,
+  },
+  {
+    id: 'minimax', name: 'Minimax Coding', slug: 'minimax', status: 'active', apiKeyConfigured: true,
     modelsAvailable: 3, totalRequests: 32000, errorRate: 0.6, baseUrl: 'https://api.minimax.chat/v1',
-    icon: 'minimax', tier: 'api-key', authMethod: 'api-key', color: '#FF4081', alias: 'minimax',
-    serviceKinds: ['llm', 'tts', 'video', 'music'], strategy: 'fill-first', stickyLimit: 1,
+    icon: 'memory', tier: 'api-key', authMethod: 'api-key', color: '#7C3AED', alias: 'minimax',
+    textIcon: 'MM', website: 'https://www.minimaxi.com',
+    serviceKinds: ['llm', 'image', 'imageToText', 'webSearch'], strategy: 'fill-first', stickyLimit: 1,
     connections: [
       conn('mm-1', 'MiniMax API Key', 'minimax', 'connected', { totalRequests: 32000, priority: 1 }),
     ],
     quotaSupported: false, deprecated: false, cooldownMs: 10000, maxRetries: 2,
   },
   {
+    id: 'minimax-cn', name: 'Minimax (China)', slug: 'minimax-cn', status: 'active', apiKeyConfigured: true,
+    modelsAvailable: 3, totalRequests: 8000, errorRate: 0.7, baseUrl: 'https://api.minimax.chat/v1',
+    icon: 'memory', tier: 'api-key', authMethod: 'api-key', color: '#DC2626', alias: 'minimax-cn',
+    textIcon: 'MC', website: 'https://www.minimaxi.com',
+    serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 1,
+    connections: [],
+    quotaSupported: false, deprecated: false, cooldownMs: 10000, maxRetries: 2,
+  },
+  {
+    id: 'alicode', name: 'Alibaba', slug: 'alicode', status: 'active', apiKeyConfigured: true,
+    modelsAvailable: 4, totalRequests: 18000, errorRate: 0.5, baseUrl: 'https://dashscope.aliyuncs.com/api/v1',
+    icon: 'cloud', tier: 'api-key', authMethod: 'api-key', color: '#FF6A00', alias: 'alicode',
+    textIcon: 'ALi',
+    serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 1,
+    connections: [
+      conn('ali-1', 'Alibaba Key', 'alicode', 'connected', { totalRequests: 18000, priority: 1 }),
+    ],
+    quotaSupported: false, deprecated: false, cooldownMs: 10000, maxRetries: 2,
+  },
+  {
+    id: 'alicode-intl', name: 'Alibaba Intl', slug: 'alicode-intl', status: 'active', apiKeyConfigured: true,
+    modelsAvailable: 4, totalRequests: 9000, errorRate: 0.5, baseUrl: 'https://dashscope-intl.aliyuncs.com/api/v1',
+    icon: 'cloud', tier: 'api-key', authMethod: 'api-key', color: '#FF6A00', alias: 'alicode-intl',
+    textIcon: 'ALi',
+    serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 1,
+    connections: [],
+    quotaSupported: false, deprecated: false, cooldownMs: 10000, maxRetries: 2,
+  },
+  {
+    id: 'perplexity', name: 'Perplexity', slug: 'perplexity', status: 'active', apiKeyConfigured: true,
+    modelsAvailable: 3, totalRequests: 67000, errorRate: 0.3, baseUrl: 'https://api.perplexity.ai',
+    icon: 'search', tier: 'api-key', authMethod: 'api-key', color: '#20808D', alias: 'pplx',
+    textIcon: 'PP', website: 'https://www.perplexity.ai',
+    serviceKinds: ['llm', 'webSearch'], strategy: 'fill-first', stickyLimit: 1,
+    connections: [
+      conn('pplx-1', 'Perplexity Key', 'perplexity', 'connected', { totalRequests: 67000, priority: 1 }),
+    ],
+    quotaSupported: false, deprecated: false, cooldownMs: 5000, maxRetries: 3,
+  },
+  {
     id: 'together', name: 'Together AI', slug: 'together', status: 'active', apiKeyConfigured: true,
     modelsAvailable: 15, totalRequests: 210000, errorRate: 0.3, baseUrl: 'https://api.together.xyz/v1',
-    icon: 'together', tier: 'api-key', authMethod: 'api-key', color: '#0EA5E9', alias: 'together',
-    serviceKinds: ['llm', 'embedding', 'image'], strategy: 'fill-first', stickyLimit: 1,
+    icon: 'group_work', tier: 'api-key', authMethod: 'api-key', color: '#0F6FFF', alias: 'together',
+    textIcon: 'TG', website: 'https://www.together.ai',
+    serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 1,
     connections: [
       conn('tog-1', 'Together Key', 'together', 'connected', { totalRequests: 210000, priority: 1 }),
     ],
@@ -446,8 +627,9 @@ export const mockEnhancedProviders: AIProviderEnhanced[] = [
   {
     id: 'fireworks', name: 'Fireworks AI', slug: 'fireworks', status: 'active', apiKeyConfigured: true,
     modelsAvailable: 10, totalRequests: 134000, errorRate: 0.4, baseUrl: 'https://api.fireworks.ai/inference/v1',
-    icon: 'fireworks', tier: 'api-key', authMethod: 'api-key', color: '#FF6B2B', alias: 'fireworks',
-    serviceKinds: ['llm', 'embedding'], strategy: 'fill-first', stickyLimit: 1,
+    icon: 'local_fire_department', tier: 'api-key', authMethod: 'api-key', color: '#7B2EF2', alias: 'fireworks',
+    textIcon: 'FW', website: 'https://fireworks.ai',
+    serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 1,
     connections: [
       conn('fw-1', 'Fireworks Key', 'fireworks', 'connected', { totalRequests: 134000, priority: 1 }),
     ],
@@ -456,7 +638,8 @@ export const mockEnhancedProviders: AIProviderEnhanced[] = [
   {
     id: 'cerebras', name: 'Cerebras', slug: 'cerebras', status: 'active', apiKeyConfigured: true,
     modelsAvailable: 3, totalRequests: 78000, errorRate: 0.2, baseUrl: 'https://api.cerebras.ai/v1',
-    icon: 'cerebras', tier: 'api-key', authMethod: 'api-key', color: '#E11D48', alias: 'cerebras',
+    icon: 'memory', tier: 'api-key', authMethod: 'api-key', color: '#FF4F00', alias: 'cerebras',
+    textIcon: 'CB', website: 'https://www.cerebras.ai',
     serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 1,
     connections: [
       conn('cb-1', 'Cerebras Key', 'cerebras', 'connected', { totalRequests: 78000, priority: 1 }),
@@ -466,28 +649,31 @@ export const mockEnhancedProviders: AIProviderEnhanced[] = [
   {
     id: 'cohere', name: 'Cohere', slug: 'cohere', status: 'active', apiKeyConfigured: true,
     modelsAvailable: 4, totalRequests: 56000, errorRate: 0.5, baseUrl: 'https://api.cohere.ai/v2',
-    icon: 'cohere', tier: 'api-key', authMethod: 'api-key', color: '#39594D', alias: 'cohere',
-    serviceKinds: ['llm', 'embedding', 'webSearch'], strategy: 'fill-first', stickyLimit: 1,
+    icon: 'hub', tier: 'api-key', authMethod: 'api-key', color: '#39594D', alias: 'cohere',
+    textIcon: 'CO', website: 'https://cohere.com',
+    serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 1,
     connections: [
       conn('co-1', 'Cohere API Key', 'cohere', 'connected', { totalRequests: 56000, priority: 1 }),
     ],
     quotaSupported: false, deprecated: false, cooldownMs: 5000, maxRetries: 3,
   },
   {
-    id: 'perplexity', name: 'Perplexity', slug: 'perplexity', status: 'active', apiKeyConfigured: true,
-    modelsAvailable: 3, totalRequests: 67000, errorRate: 0.3, baseUrl: 'https://api.perplexity.ai',
-    icon: 'perplexity', tier: 'api-key', authMethod: 'api-key', color: '#20B2AA', alias: 'perplexity',
-    serviceKinds: ['llm', 'webSearch'], strategy: 'fill-first', stickyLimit: 1,
+    id: 'nebius', name: 'Nebius AI', slug: 'nebius', status: 'active', apiKeyConfigured: true,
+    modelsAvailable: 5, totalRequests: 18000, errorRate: 0.6, baseUrl: 'https://api.studio.nebius.ai/v1',
+    icon: 'cloud', tier: 'api-key', authMethod: 'api-key', color: '#6C5CE7', alias: 'nebius',
+    textIcon: 'NB', website: 'https://nebius.com',
+    serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 1,
     connections: [
-      conn('pplx-1', 'Perplexity Key', 'perplexity', 'connected', { totalRequests: 67000, priority: 1 }),
+      conn('neb-1', 'Nebius Key', 'nebius', 'connected', { totalRequests: 18000, priority: 1 }),
     ],
-    quotaSupported: false, deprecated: false, cooldownMs: 5000, maxRetries: 3,
+    quotaSupported: false, deprecated: false, cooldownMs: 10000, maxRetries: 2,
   },
   {
     id: 'siliconflow', name: 'SiliconFlow', slug: 'siliconflow', status: 'active', apiKeyConfigured: true,
     modelsAvailable: 20, totalRequests: 89000, errorRate: 0.7, baseUrl: 'https://api.siliconflow.cn/v1',
-    icon: 'siliconflow', tier: 'api-key', authMethod: 'api-key', color: '#7C3AED', alias: 'siliconflow',
-    serviceKinds: ['llm', 'embedding', 'image'], strategy: 'fill-first', stickyLimit: 1,
+    icon: 'cloud_queue', tier: 'api-key', authMethod: 'api-key', color: '#5B6EF5', alias: 'siliconflow',
+    textIcon: 'SF', website: 'https://cloud.siliconflow.com',
+    serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 1,
     connections: [
       conn('sf-1', 'SiliconFlow Key', 'siliconflow', 'connected', { totalRequests: 89000, priority: 1 }),
     ],
@@ -496,17 +682,19 @@ export const mockEnhancedProviders: AIProviderEnhanced[] = [
   {
     id: 'hyperbolic', name: 'Hyperbolic', slug: 'hyperbolic', status: 'active', apiKeyConfigured: true,
     modelsAvailable: 8, totalRequests: 34000, errorRate: 1.0, baseUrl: 'https://api.hyperbolic.xyz/v1',
-    icon: 'hyperbolic', tier: 'api-key', authMethod: 'api-key', color: '#8B5CF6', alias: 'hyperbolic',
-    serviceKinds: ['llm', 'image'], strategy: 'fill-first', stickyLimit: 1,
+    icon: 'bolt', tier: 'api-key', authMethod: 'api-key', color: '#00D4FF', alias: 'hyp',
+    textIcon: 'HY', website: 'https://hyperbolic.xyz',
+    serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 1,
     connections: [
       conn('hyp-1', 'Hyperbolic Key', 'hyperbolic', 'connected', { totalRequests: 34000, priority: 1 }),
     ],
     quotaSupported: false, deprecated: false, cooldownMs: 10000, maxRetries: 2,
   },
   {
-    id: 'chutes', name: 'Chutes', slug: 'chutes', status: 'active', apiKeyConfigured: true,
+    id: 'chutes', name: 'Chutes AI', slug: 'chutes', status: 'active', apiKeyConfigured: true,
     modelsAvailable: 6, totalRequests: 22000, errorRate: 1.2, baseUrl: 'https://api.chutes.ai/v1',
-    icon: 'chutes', tier: 'api-key', authMethod: 'api-key', color: '#06B6D4', alias: 'chutes',
+    icon: 'water_drop', tier: 'api-key', authMethod: 'api-key', color: '#ffffffff', alias: 'ch',
+    textIcon: 'CH', website: 'https://chutes.ai',
     serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 1,
     connections: [
       conn('ch-1', 'Chutes Key', 'chutes', 'connected', { totalRequests: 22000, priority: 1 }),
@@ -514,21 +702,43 @@ export const mockEnhancedProviders: AIProviderEnhanced[] = [
     quotaSupported: false, deprecated: false, cooldownMs: 10000, maxRetries: 2,
   },
   {
-    id: 'nebius', name: 'Nebius AI', slug: 'nebius', status: 'active', apiKeyConfigured: true,
-    modelsAvailable: 5, totalRequests: 18000, errorRate: 0.6, baseUrl: 'https://api.studio.nebius.ai/v1',
-    icon: 'nebius', tier: 'api-key', authMethod: 'api-key', color: '#2563EB', alias: 'nebius',
+    id: 'ollama-local', name: 'Ollama Local', slug: 'ollama-local', status: 'active', apiKeyConfigured: true,
+    modelsAvailable: 10, totalRequests: 56000, errorRate: 0.1, baseUrl: 'http://localhost:11434',
+    icon: 'cloud', tier: 'api-key', authMethod: 'api-key', color: '#ffffffff', alias: 'ollama-local',
+    textIcon: 'OL', website: 'https://ollama.com',
     serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 1,
     connections: [
-      conn('neb-1', 'Nebius Key', 'nebius', 'connected', { totalRequests: 18000, priority: 1 }),
+      conn('ol-local-1', 'Local Ollama', 'ollama-local', 'connected', { totalRequests: 56000, priority: 1 }),
     ],
+    quotaSupported: false, deprecated: false, cooldownMs: 1000, maxRetries: 1,
+  },
+  {
+    id: 'vertex-partner', name: 'Vertex Partner', slug: 'vertex-partner', status: 'active', apiKeyConfigured: true,
+    modelsAvailable: 4, totalRequests: 12000, errorRate: 0.4, baseUrl: 'https://us-central1-aiplatform.googleapis.com',
+    icon: 'cloud', tier: 'api-key', authMethod: 'api-key', color: '#34A853', alias: 'vxp',
+    textIcon: 'VP', website: 'https://cloud.google.com/vertex-ai/generative-ai/docs/partner-models/use-partner-models',
+    serviceKinds: ['llm'], strategy: 'fill-first', stickyLimit: 1,
+    connections: [],
     quotaSupported: false, deprecated: false, cooldownMs: 10000, maxRetries: 2,
   },
+  {
+    id: 'huggingface', name: 'HuggingFace', slug: 'huggingface', status: 'active', apiKeyConfigured: true,
+    modelsAvailable: 8, totalRequests: 28000, errorRate: 0.8, baseUrl: 'https://api-inference.huggingface.co',
+    icon: 'face', tier: 'api-key', authMethod: 'api-key', color: '#FFD21E', alias: 'hf',
+    textIcon: 'HF', website: 'https://huggingface.co',
+    serviceKinds: ['image', 'imageToText', 'tts'], strategy: 'fill-first', stickyLimit: 1,
+    connections: [
+      conn('hf-1', 'HuggingFace Key', 'huggingface', 'connected', { totalRequests: 28000, priority: 1 }),
+    ],
+    quotaSupported: false, deprecated: false, cooldownMs: 5000, maxRetries: 2,
+  },
 
-  // =============== MEDIA / SPEECH / SEARCH ===============
+  // =============== MEDIA / SPEECH / SEARCH PROVIDERS ===============
   {
     id: 'deepgram', name: 'Deepgram', slug: 'deepgram', status: 'active', apiKeyConfigured: true,
     modelsAvailable: 3, totalRequests: 45000, errorRate: 0.2, baseUrl: 'https://api.deepgram.com/v1',
-    icon: 'deepgram', tier: 'api-key', authMethod: 'api-key', color: '#13EF93', alias: 'deepgram',
+    icon: 'mic', tier: 'api-key', authMethod: 'api-key', color: '#13EF93', alias: 'dg',
+    textIcon: 'DG', website: 'https://deepgram.com',
     serviceKinds: ['stt', 'imageToText'], strategy: 'fill-first', stickyLimit: 1,
     connections: [
       conn('dg-1', 'Deepgram Key', 'deepgram', 'connected', { totalRequests: 45000, priority: 1 }),
@@ -536,9 +746,30 @@ export const mockEnhancedProviders: AIProviderEnhanced[] = [
     quotaSupported: false, deprecated: false, cooldownMs: 5000, maxRetries: 3,
   },
   {
+    id: 'assemblyai', name: 'AssemblyAI', slug: 'assemblyai', status: 'active', apiKeyConfigured: true,
+    modelsAvailable: 2, totalRequests: 15000, errorRate: 0.3, baseUrl: 'https://api.assemblyai.com/v2',
+    icon: 'record_voice_over', tier: 'api-key', authMethod: 'api-key', color: '#0062FF', alias: 'aai',
+    textIcon: 'AA', website: 'https://assemblyai.com',
+    serviceKinds: ['stt'], strategy: 'fill-first', stickyLimit: 1,
+    connections: [
+      conn('aai-1', 'AssemblyAI Key', 'assemblyai', 'connected', { totalRequests: 15000, priority: 1 }),
+    ],
+    quotaSupported: false, deprecated: false, cooldownMs: 5000, maxRetries: 3,
+  },
+  {
+    id: 'nanobanana', name: 'NanoBanana', slug: 'nanobanana', status: 'active', apiKeyConfigured: true,
+    modelsAvailable: 2, totalRequests: 8000, errorRate: 0.5, baseUrl: 'https://api.nanobananaapi.ai/v1',
+    icon: 'image', tier: 'api-key', authMethod: 'api-key', color: '#FFD700', alias: 'nb',
+    textIcon: 'NB', website: 'https://nanobananaapi.ai',
+    serviceKinds: ['image'], strategy: 'fill-first', stickyLimit: 1,
+    connections: [],
+    quotaSupported: false, deprecated: false, cooldownMs: 5000, maxRetries: 2,
+  },
+  {
     id: 'elevenlabs', name: 'ElevenLabs', slug: 'elevenlabs', status: 'active', apiKeyConfigured: true,
     modelsAvailable: 4, totalRequests: 23000, errorRate: 0.3, baseUrl: 'https://api.elevenlabs.io/v1',
-    icon: 'elevenlabs', tier: 'api-key', authMethod: 'api-key', color: '#000000', alias: 'elevenlabs',
+    icon: 'record_voice_over', tier: 'api-key', authMethod: 'api-key', color: '#6C47FF', alias: 'el',
+    textIcon: 'EL', website: 'https://elevenlabs.io',
     serviceKinds: ['tts'], strategy: 'fill-first', stickyLimit: 1,
     connections: [
       conn('el-1', 'ElevenLabs Key', 'elevenlabs', 'connected', { totalRequests: 23000, priority: 1 }),
@@ -546,9 +777,48 @@ export const mockEnhancedProviders: AIProviderEnhanced[] = [
     quotaSupported: false, deprecated: false, cooldownMs: 5000, maxRetries: 3,
   },
   {
+    id: 'cartesia', name: 'Cartesia', slug: 'cartesia', status: 'active', apiKeyConfigured: true,
+    modelsAvailable: 2, totalRequests: 5000, errorRate: 0.4, baseUrl: 'https://api.cartesia.ai/v1',
+    icon: 'spatial_audio', tier: 'api-key', authMethod: 'api-key', color: '#FF4F8B', alias: 'cartesia',
+    textIcon: 'CA', website: 'https://cartesia.ai',
+    serviceKinds: ['tts'], strategy: 'fill-first', stickyLimit: 1,
+    connections: [],
+    quotaSupported: false, deprecated: false, cooldownMs: 5000, maxRetries: 2,
+  },
+  {
+    id: 'playht', name: 'PlayHT', slug: 'playht', status: 'active', apiKeyConfigured: true,
+    modelsAvailable: 2, totalRequests: 3000, errorRate: 0.4, baseUrl: 'https://api.play.ht/api/v2',
+    icon: 'play_circle', tier: 'api-key', authMethod: 'api-key', color: '#00B4D8', alias: 'playht',
+    textIcon: 'PH', website: 'https://play.ht',
+    serviceKinds: ['tts'], strategy: 'fill-first', stickyLimit: 1,
+    connections: [],
+    quotaSupported: false, deprecated: false, cooldownMs: 5000, maxRetries: 2,
+  },
+  {
+    id: 'sdwebui', name: 'SD WebUI', slug: 'sdwebui', status: 'active', apiKeyConfigured: true,
+    modelsAvailable: 5, totalRequests: 12000, errorRate: 0.3, baseUrl: 'http://localhost:7860',
+    icon: 'brush', tier: 'api-key', authMethod: 'api-key', color: '#FF7043', alias: 'sdwebui',
+    textIcon: 'SD', website: 'https://github.com/AUTOMATIC1111/stable-diffusion-webui',
+    serviceKinds: ['image'], strategy: 'fill-first', stickyLimit: 1,
+    connections: [],
+    quotaSupported: false, deprecated: false, cooldownMs: 1000, maxRetries: 1,
+  },
+  {
+    id: 'comfyui', name: 'ComfyUI', slug: 'comfyui', status: 'active', apiKeyConfigured: true,
+    modelsAvailable: 5, totalRequests: 8000, errorRate: 0.3, baseUrl: 'http://localhost:8188',
+    icon: 'account_tree', tier: 'api-key', authMethod: 'api-key', color: '#4CAF50', alias: 'comfyui',
+    textIcon: 'CF', website: 'https://github.com/comfyanonymous/ComfyUI',
+    serviceKinds: ['image'], strategy: 'fill-first', stickyLimit: 1,
+    connections: [],
+    quotaSupported: false, deprecated: false, cooldownMs: 1000, maxRetries: 1,
+  },
+
+  // =============== SEARCH PROVIDERS ===============
+  {
     id: 'tavily', name: 'Tavily', slug: 'tavily', status: 'active', apiKeyConfigured: true,
     modelsAvailable: 1, totalRequests: 67000, errorRate: 0.1, baseUrl: 'https://api.tavily.com',
-    icon: 'tavily', tier: 'api-key', authMethod: 'api-key', color: '#9333EA', alias: 'tavily',
+    icon: 'search', tier: 'api-key', authMethod: 'api-key', color: '#5B21B6', alias: 'tavily',
+    textIcon: 'TV', website: 'https://tavily.com',
     serviceKinds: ['webSearch'], strategy: 'fill-first', stickyLimit: 1,
     connections: [
       conn('tav-1', 'Tavily Key', 'tavily', 'connected', { totalRequests: 67000, priority: 1 }),
@@ -558,14 +828,96 @@ export const mockEnhancedProviders: AIProviderEnhanced[] = [
   {
     id: 'brave-search', name: 'Brave Search', slug: 'brave-search', status: 'active', apiKeyConfigured: true,
     modelsAvailable: 1, totalRequests: 34000, errorRate: 0.2, baseUrl: 'https://api.search.brave.com',
-    icon: 'brave', tier: 'api-key', authMethod: 'api-key', color: '#FB542B', alias: 'brave-search',
+    icon: 'travel_explore', tier: 'api-key', authMethod: 'api-key', color: '#FB542B', alias: 'brave',
+    textIcon: 'BR', website: 'https://brave.com/search/api',
     serviceKinds: ['webSearch'], strategy: 'fill-first', stickyLimit: 1,
     connections: [
       conn('brave-1', 'Brave API Key', 'brave-search', 'connected', { totalRequests: 34000, priority: 1 }),
     ],
     quotaSupported: false, deprecated: false, cooldownMs: 1000, maxRetries: 3,
   },
+  {
+    id: 'serper', name: 'Serper', slug: 'serper', status: 'active', apiKeyConfigured: true,
+    modelsAvailable: 1, totalRequests: 22000, errorRate: 0.2, baseUrl: 'https://google.serper.dev',
+    icon: 'search', tier: 'api-key', authMethod: 'api-key', color: '#4F46E5', alias: 'serper',
+    textIcon: 'SP', website: 'https://serper.dev',
+    serviceKinds: ['webSearch'], strategy: 'fill-first', stickyLimit: 1,
+    connections: [
+      conn('serper-1', 'Serper Key', 'serper', 'connected', { totalRequests: 22000, priority: 1 }),
+    ],
+    quotaSupported: false, deprecated: false, cooldownMs: 1000, maxRetries: 3,
+  },
+  {
+    id: 'exa', name: 'Exa', slug: 'exa', status: 'active', apiKeyConfigured: true,
+    modelsAvailable: 1, totalRequests: 15000, errorRate: 0.3, baseUrl: 'https://api.exa.ai',
+    icon: 'manage_search', tier: 'api-key', authMethod: 'api-key', color: '#2563EB', alias: 'exa',
+    textIcon: 'EX', website: 'https://exa.ai',
+    serviceKinds: ['webSearch'], strategy: 'fill-first', stickyLimit: 1,
+    connections: [
+      conn('exa-1', 'Exa Key', 'exa', 'connected', { totalRequests: 15000, priority: 1 }),
+    ],
+    quotaSupported: false, deprecated: false, cooldownMs: 1000, maxRetries: 3,
+  },
+  {
+    id: 'firecrawl', name: 'Firecrawl', slug: 'firecrawl', status: 'active', apiKeyConfigured: true,
+    modelsAvailable: 1, totalRequests: 9000, errorRate: 0.4, baseUrl: 'https://api.firecrawl.dev',
+    icon: 'local_fire_department', tier: 'api-key', authMethod: 'api-key', color: '#F59E0B', alias: 'firecrawl',
+    textIcon: 'FC', website: 'https://firecrawl.dev',
+    serviceKinds: ['webFetch'], strategy: 'fill-first', stickyLimit: 1,
+    connections: [
+      conn('fc-1', 'Firecrawl Key', 'firecrawl', 'connected', { totalRequests: 9000, priority: 1 }),
+    ],
+    quotaSupported: false, deprecated: false, cooldownMs: 1000, maxRetries: 2,
+  },
+
+  // =============== FREE (noAuth) PROVIDERS ===============
+  {
+    id: 'local-device', name: 'Local Device', slug: 'local-device', status: 'active', apiKeyConfigured: false,
+    modelsAvailable: 1, totalRequests: 12000, errorRate: 0.0, baseUrl: 'local',
+    icon: 'speaker', tier: 'api-key', authMethod: 'noAuth', color: '#64748B', alias: 'local-device',
+    textIcon: 'LD', noAuth: true,
+    serviceKinds: ['tts'], strategy: 'fill-first', stickyLimit: 1,
+    connections: [
+      conn('ld-1', 'Local TTS', 'local-device', 'connected', { totalRequests: 12000, priority: 1 }),
+    ],
+    quotaSupported: false, deprecated: false, cooldownMs: 0, maxRetries: 1,
+  },
+  {
+    id: 'google-tts', name: 'Google TTS', slug: 'google-tts', status: 'active', apiKeyConfigured: false,
+    modelsAvailable: 1, totalRequests: 8000, errorRate: 0.1, baseUrl: 'https://translate.google.com',
+    icon: 'record_voice_over', tier: 'api-key', authMethod: 'noAuth', color: '#4285F4', alias: 'google-tts',
+    textIcon: 'GT', noAuth: true,
+    serviceKinds: ['tts'], strategy: 'fill-first', stickyLimit: 1,
+    connections: [
+      conn('gtts-1', 'Google TTS', 'google-tts', 'connected', { totalRequests: 8000, priority: 1 }),
+    ],
+    quotaSupported: false, deprecated: false, cooldownMs: 0, maxRetries: 1,
+  },
+  {
+    id: 'edge-tts', name: 'Edge TTS', slug: 'edge-tts', status: 'active', apiKeyConfigured: false,
+    modelsAvailable: 1, totalRequests: 6000, errorRate: 0.1, baseUrl: 'https://speech.platform.bing.com',
+    icon: 'record_voice_over', tier: 'api-key', authMethod: 'noAuth', color: '#0078D4', alias: 'edge-tts',
+    textIcon: 'ET', noAuth: true,
+    serviceKinds: ['tts'], strategy: 'fill-first', stickyLimit: 1,
+    connections: [
+      conn('etts-1', 'Edge TTS', 'edge-tts', 'connected', { totalRequests: 6000, priority: 1 }),
+    ],
+    quotaSupported: false, deprecated: false, cooldownMs: 0, maxRetries: 1,
+  },
+  {
+    id: 'searxng', name: 'SearXNG', slug: 'searxng', status: 'active', apiKeyConfigured: false,
+    modelsAvailable: 1, totalRequests: 18000, errorRate: 0.2, baseUrl: 'http://localhost:8888',
+    icon: 'saved_search', tier: 'api-key', authMethod: 'noAuth', color: '#3B82F6', alias: 'searxng',
+    textIcon: 'SX', website: 'https://docs.searxng.org', noAuth: true,
+    serviceKinds: ['webSearch'], strategy: 'fill-first', stickyLimit: 1,
+    connections: [
+      conn('sxng-1', 'SearXNG Instance', 'searxng', 'connected', { totalRequests: 18000, priority: 1 }),
+    ],
+    quotaSupported: false, deprecated: false, cooldownMs: 0, maxRetries: 2,
+  },
 ];
+
+
 
 // ---- ENHANCED MODELS ----
 
