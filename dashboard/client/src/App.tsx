@@ -8,7 +8,10 @@ import Dashboard from "./pages/Dashboard";
 import Users from "./pages/Users";
 import ApiKeys from "./pages/ApiKeys";
 import Providers from "./pages/Providers";
+import ProviderDetail from "./pages/ProviderDetail";
 import Models from "./pages/Models";
+import Combos from "./pages/Combos";
+import Routing from "./pages/Routing";
 import Usage from "./pages/Usage";
 import Billing from "./pages/Billing";
 import Features from "./pages/Features";
@@ -39,8 +42,11 @@ function AppContent() {
         <Route path="/" component={Dashboard} />
         <Route path="/users" component={Users} />
         <Route path="/api-keys" component={ApiKeys} />
+        <Route path="/providers/:id" component={ProviderDetail} />
         <Route path="/providers" component={Providers} />
         <Route path="/models" component={Models} />
+        <Route path="/combos" component={Combos} />
+        <Route path="/routing" component={Routing} />
         <Route path="/usage" component={Usage} />
         <Route path="/billing" component={Billing} />
         <Route path="/features" component={Features} />

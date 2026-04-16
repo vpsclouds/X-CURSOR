@@ -12,9 +12,10 @@ import {
   ScrollText,
   ChevronLeft,
   ChevronRight,
+  Layers,
+  Route,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
 
 const navItems = [
   { path: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -22,6 +23,8 @@ const navItems = [
   { path: "/api-keys", label: "API Keys", icon: Key },
   { path: "/providers", label: "Providers", icon: Brain },
   { path: "/models", label: "Models", icon: Cpu },
+  { path: "/combos", label: "Combos", icon: Layers },
+  { path: "/routing", label: "Routing", icon: Route },
   { path: "/usage", label: "Usage", icon: BarChart3 },
   { path: "/billing", label: "Billing", icon: CreditCard },
   { path: "/features", label: "Features", icon: ToggleLeft },
@@ -86,7 +89,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
       {/* Navigation */}
       <nav className="flex-1 py-3 px-2 space-y-0.5 overflow-y-auto">
         {navItems.map((item) => {
-          const isActive = location === item.path;
+          const isActive = item.path === "/" ? location === "/" : location.startsWith(item.path);
           const Icon = item.icon;
           return (
             <Link key={item.path} href={item.path}>
